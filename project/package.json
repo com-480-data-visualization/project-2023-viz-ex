@@ -1,0 +1,25 @@
+{
+  "name": "project-2023-viz-ex",
+  "version": "1.0.0",
+  "description": "| Student's name | SCIPER | | -------------- | ------ | |An Bui Duc Khanh | | | | | | | |",
+  "private": true,
+  "scripts": {
+    "start": "webpack serve",
+    "build": "webpack"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "d3": "^7.8.4",
+    "lodash": "^4.17.21"
+  },
+  "devDependencies": {
+    "@types/d3": "^7.4.0",
+    "copy-webpack-plugin": "^11.0.0",
+    "css-loader": "^6.7.3",
+    "html-webpack-plugin": "^5.5.1",
+    "webpack": "^5.81.0",
+    "webpack-cli": "^5.0.2",
+    "webpack-dev-server": "^4.13.3"
+  }
+}
