@@ -3,10 +3,22 @@
 | Student's name | SCIPER |
 | -------------- | ------ |
 |An Bui Duc Khanh | |
-| | |
-| | |
+|Julie-Anne Jaeggi | |
+|Olivier Saint-Cyr | |
 
 [Milestone 1](https://github.com/com-480-data-visualization/project-2023-viz-ex/tree/master/ms1) • [Milestone 2](#milestone-2) • [Milestone 3](#milestone-3)
+
+## How to start the Project
+
+### 1. Install node.js (https://nodejs.org/en/download)
+### 2. Download http-server
+```
+npm install http-server
+```
+### 3. Start the http server
+```
+npm start
+```
 
 ## Milestone 1 (23rd April, 5pm)
 
@@ -45,7 +57,6 @@ Please, fill the following sections about your project.
 ## Milestone 2 (7th May, 5pm)
 
 **10% of the final grade**
-
 
 ## Milestone 3 (4th June, 5pm)
 
