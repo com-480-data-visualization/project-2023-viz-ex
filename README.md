@@ -11,9 +11,9 @@
 ## How to start the Project
 
 ### 1. Install node.js (https://nodejs.org/en/download)
-### 2. Download http-server
+### 2. Download projects dependencies
 ```
-npm install http-server
+npm ci
 ```
 ### 3. Start the http server
 ```
