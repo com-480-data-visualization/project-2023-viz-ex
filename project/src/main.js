@@ -1,6 +1,6 @@
 import L, { bounds } from 'leaflet'
 import { select, selectAll } from 'd3-selection'
-import { csv } from 'd3'
+import { csv, hierarchy } from 'd3'
 
 const initMap = () => {
     let map = L
@@ -12,7 +12,7 @@ const initMap = () => {
 	L.tileLayer(
 		'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 		attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a>',
-		maxZoom: 5,
+		maxZoom: 10,
 	}).addTo(map);
 	
 	// Add a svg layer to the map
@@ -20,19 +20,33 @@ const initMap = () => {
     return map;
 }
 
-const initD3MapLayer = (map, markers) => {
+const initD3MapLayer = (map, earthquakes) => {
     // Select the svg area and add circles:
+    let maxZoom = map.getMaxZoom()
+    let minRadius = (zoom) => {
+        return 2
+    }
+    let maxRadius = (zoom) => {
+        return 64 * (zoom / maxZoom) + minRadius(zoom)
+    }
+
+    function updateRadius(height, d) {
+        let max = maxRadius(height)
+        let min = minRadius(height)
+        return (d.mag - 5.5)/(10 - 5.5) * (max - min) + min
+    }
+
     select("#mapid")
         .select("svg")
         .selectAll("myCircles")
-        .data(markers)
+        .data(earthquakes)
         .enter()
         .append("circle")
             .attr("cx", function(d){ return map.latLngToLayerPoint([d.lat, d.long]).x })
             .attr("cy", function(d){ return map.latLngToLayerPoint([d.lat, d.long]).y })
-            .attr("r", 3)
-            .style("fill", "red")
-            .attr("stroke", "red")
+            .attr("r", function(d) { return updateRadius(map.getZoom(), d) })
+            .style("fill", "steelblue")
+            .attr("stroke", "steelblue")
             .attr("stroke-width", 3)
             .attr("fill-opacity", .4)
       
@@ -41,6 +55,7 @@ const initD3MapLayer = (map, markers) => {
         selectAll("circle")
             .attr("cx", function(d){ return map.latLngToLayerPoint([d.lat, d.long]).x })
             .attr("cy", function(d){ return map.latLngToLayerPoint([d.lat, d.long]).y })
+            .attr("r", function(d) { return updateRadius(map.getZoom(), d) })
     }
     
     // If the user change the map (zoom or drag), I update circle position:
@@ -68,8 +83,9 @@ whenDocumentLoaded(() => {
         loadData((data) => {
             let latLongs = data.map((record) => {
                 return { 
-                    lat: parseInt(record.Latitude),
-                    long: parseInt(record.Longitude),
+                    lat: parseFloat(record.Latitude),
+                    long: parseFloat(record.Longitude),
+                    mag: parseFloat(record.Magnitude)
                 }
             })
             initD3MapLayer(map, latLongs)
