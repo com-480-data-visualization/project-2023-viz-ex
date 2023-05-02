@@ -12,19 +12,16 @@ It switches from
 to
 	https://mdn.mozillademos.org/files/13649/box-model-alt-small.png
 */
-* {
-	box-sizing: border-box;
-}
 
 /*
 Make the document fill the whole viewport, this overrides any weird defaults that browsers might have.
 */
-html, body, figure {
+/* html, body, figure {
 	width: 100%;
 	padding: 0;
 	margin: 0;
 	border: 0;
-}
+} */
 
 /* Default font and size */
 body {
@@ -47,7 +44,3 @@ body {
 	font-size: 1.1rem;
 }
 
-svg {
-	width: 100%;
-	height: auto;
-}
