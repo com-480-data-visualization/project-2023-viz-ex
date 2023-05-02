@@ -1,18 +1,19 @@
-import L from 'leaflet'
+import L, { bounds } from 'leaflet'
 import { select, selectAll } from 'd3-selection'
 import { csv } from 'd3'
 
 const initMap = () => {
-    var map = L
-	  .map('mapid')
-	  .setView([47, 2], 5);   // center position + zoom
-	
+    let map = L
+	    .map('mapid')
+	    .setView([40.737, -73.923], 2)   // center position + zoom
+        .setMaxBounds([[-90,-180], [90,180]]) // set max bounds to entire map
+    
 	// Add a tile to the map = a background. Comes from OpenStreetmap
 	L.tileLayer(
 		'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 		attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a>',
-		maxZoom: 6,
-		}).addTo(map);
+		maxZoom: 5,
+	}).addTo(map);
 	
 	// Add a svg layer to the map
 	L.svg().addTo(map);
@@ -37,9 +38,9 @@ const initD3MapLayer = (map, markers) => {
       
     // Function that update circle position if something change
     function update() {
-    selectAll("circle")
-        .attr("cx", function(d){ return map.latLngToLayerPoint([d.lat, d.long]).x })
-        .attr("cy", function(d){ return map.latLngToLayerPoint([d.lat, d.long]).y })
+        selectAll("circle")
+            .attr("cx", function(d){ return map.latLngToLayerPoint([d.lat, d.long]).x })
+            .attr("cy", function(d){ return map.latLngToLayerPoint([d.lat, d.long]).y })
     }
     
     // If the user change the map (zoom or drag), I update circle position:
