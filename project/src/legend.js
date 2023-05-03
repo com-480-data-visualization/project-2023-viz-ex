@@ -2,11 +2,13 @@ import L from 'leaflet'
 import { select } from 'd3-selection'
 import { 
     scaleLinear,
+    scaleTime,
     extent,
     axisBottom,
     axisLeft,
     curveBasis,
     line,
+    timeParse,
 } from 'd3';
 
 const QUAKES_BY_COUNTRY_ID = 'contryQuakeViz'
@@ -16,26 +18,28 @@ const margin = {top: 3, right: 10, bottom: 10, left: 20},
     height = 300 - margin.top - margin.bottom;
 
 
-
-const displayData = (data) => {
+const displayData = (yearRecords) => {
     let svg = select(`#${QUAKES_BY_COUNTRY_ID}`)
             .append('svg')
-                .attr('width', width)
-                .attr('height', height)
+                .attr('width', 380)
+                .attr('height', 320)
             .append("g")
                 .attr("transform",
                   `translate(${margin.left},${margin.top})`);
 
-    console.log('display data')
-    let x = scaleLinear()
-        .domain(extent(data, function(d) { return d.x; }))
+    let data = yearRecords.map(({ year, nbQuakes }) => { 
+            return { year: new Date(year, 0), nbQuakes: nbQuakes }
+        })
+
+    let x = scaleTime()
+        .domain(extent(data, d => d.year))
         .range([ 0, width ]);
     svg.append("g")
         .attr("transform", "translate(0," + height + ")")
         .call(axisBottom(x));
 
     let y = scaleLinear()
-        .domain( [0, 11])
+        .domain(extent(data, d => d.nbQuakes))
         .range([ height, 0 ]);
     svg.append("g")
         .call(axisLeft(y));
@@ -46,9 +50,8 @@ const displayData = (data) => {
         .attr("stroke", "black")
         .attr("stroke-width", 1.5)
         .attr("d", line()
-            .curve(curveBasis) // Just add that to have a curve instead of segments
-            .x(function(d) { return x(d.x) })
-            .y(function(d) { return y(d.y) })
+            .x(function(d) { return x(d.year) })
+            .y(function(d) { return y(d.nbQuakes) })
         )
     
     svg
@@ -58,19 +61,19 @@ const displayData = (data) => {
         .enter()
         .append("circle")
           .attr("class", "myCircle")
-          .attr("cx", function(d) { return x(d.x) } )
-          .attr("cy", function(d) { return y(d.y) } )
-          .attr("r", 8)
-          .attr("stroke", "#69b3a2")
+          .attr("cx", function(d) { return x(d.year) } )
+          .attr("cy", function(d) { return y(d.nbQuakes) } )
+          .attr("r", 1.5)
+          .attr("stroke", "steelblue")
           .attr("stroke-width", 3)
-          .attr("fill", "white")
+          .attr("fill", "steelblue")
 }
 
 export class LegendDataHandler {
     isOpen = false
     constructor(map) {
         this.map = map
-        this.legend = L.control({ position: 'bottomright' })
+        this.legend = L.control({ position: 'topright' })
         this.legend.onAdd = function() {
             this._div = L.DomUtil.create('div', 'info');
             this._div.id = 'country_info_1'
@@ -140,6 +143,6 @@ export const initLegend = (map) => {
 
 const getLegendContent = () => {
     return `
-        <div id="${QUAKES_BY_COUNTRY_ID}" style="height:400px; width:400px"></div>
+        <div id="${QUAKES_BY_COUNTRY_ID}" style="height: 100%; width:100%"></div>
     `
 }

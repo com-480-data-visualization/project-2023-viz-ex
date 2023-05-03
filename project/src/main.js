@@ -3,6 +3,9 @@ import { select, selectAll } from 'd3-selection'
 import { csv, hierarchy } from 'd3'
 import { initLegend } from './legend'
 
+const maxYear = 2016
+const minYear = 1965
+
 const initMap = () => {
     let map = L
 	    .map('mapid')
@@ -82,15 +85,15 @@ const bindButtonOnClickEvents = (legendHandler, rawData) => {
             .filter(data => data.Country == countryName)
             .reduce((rv, x) => {
                 let year = new Date(x.Date).getFullYear()
-                console.log(rv)
                 let yearData = rv[year] ?? [];
                 yearData.push(x)
                 rv[year] = yearData
                 return rv;
             }, {})
-            
-        countryData = Object.entries(countryDataPerYear)
-            .map(([ year, records]) => {
+        countryData = [...Array(maxYear - minYear + 1).keys()]
+            .map((yearDelta) => {
+                let year = minYear + yearDelta
+                let records = countryDataPerYear[year] ?? []
                 return {
                     year: year,
                     nbQuakes: records.length
