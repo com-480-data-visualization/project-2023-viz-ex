@@ -1,6 +1,7 @@
 import L, { bounds } from 'leaflet'
 import { select, selectAll } from 'd3-selection'
 import { csv, hierarchy } from 'd3'
+import { initLegend } from './legend'
 
 const initMap = () => {
     let map = L
@@ -52,10 +53,12 @@ const initD3MapLayer = (map, earthquakes) => {
       
     // Function that update circle position if something change
     function update() {
-        selectAll("circle")
-            .attr("cx", function(d){ return map.latLngToLayerPoint([d.lat, d.long]).x })
-            .attr("cy", function(d){ return map.latLngToLayerPoint([d.lat, d.long]).y })
-            .attr("r", function(d) { return updateRadius(map.getZoom(), d) })
+        select("#mapid")
+            .select("svg")
+            .selectAll("circle")
+                .attr("cx", function(d){ return map.latLngToLayerPoint([d.lat, d.long]).x })
+                .attr("cy", function(d){ return map.latLngToLayerPoint([d.lat, d.long]).y })
+                .attr("r", function(d) { return updateRadius(map.getZoom(), d) })
     }
     
     // If the user change the map (zoom or drag), I update circle position:
@@ -69,6 +72,46 @@ const loadData = (afterLoadCallback) => {
     })
 }
 
+const bindButtonOnClickEvents = (legendHandler, rawData) => {
+    var countryData = null
+    document.getElementById("country-bouton").onclick = () => {
+        let countryNameInput = document.getElementById('country')
+        let countryName = countryNameInput.value
+
+        let countryDataPerYear = rawData
+            .filter(data => data.Country == countryName)
+            .reduce((rv, x) => {
+                let year = new Date(x.Date).getFullYear()
+                console.log(rv)
+                let yearData = rv[year] ?? [];
+                yearData.push(x)
+                rv[year] = yearData
+                return rv;
+            }, {})
+            
+        countryData = Object.entries(countryDataPerYear)
+            .map(([ year, records]) => {
+                return {
+                    year: year,
+                    nbQuakes: records.length
+                }
+            })
+        console.log('data', countryData)
+        legendHandler.openOrUpdate(countryData)
+    }
+
+    document.getElementById("close-legend").onclick = () => {
+        if (!countryData) {
+            return
+        }
+        legendHandler.close()
+    }
+
+    document.getElementById("open-legend").onclick = () => {
+        legendHandler.open(countryData)
+    }
+}
+
 const whenDocumentLoaded = (action) => {
 	if (document.readyState === "loading") {
 		document.addEventListener("DOMContentLoaded", action);
@@ -79,7 +122,9 @@ const whenDocumentLoaded = (action) => {
 
 whenDocumentLoaded(() => {
     if (!window.isScriptLoaded) {
+        console.log('load map')
         let map = initMap()
+
         loadData((data) => {
             let latLongs = data.map((record) => {
                 return { 
@@ -89,7 +134,10 @@ whenDocumentLoaded(() => {
                 }
             })
             initD3MapLayer(map, latLongs)
+            let legendHandler = initLegend(map)
+            bindButtonOnClickEvents(legendHandler, data)
         })
+
         window.isScriptLoaded = true;
     }
 });
