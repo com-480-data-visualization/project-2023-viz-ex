@@ -13,6 +13,7 @@
 ### 1. Install node.js (https://nodejs.org/en/download)
 ### 2. Download projects dependencies
 ```
+cd project
 npm ci
 ```
 ### 3. Start the http server
@@ -55,6 +56,8 @@ Please, fill the following sections about your project.
 > - In case you are using a dataset that you have already explored in another context (ML or ADA course, semester project...), you are required to share the report of that work to outline the differences with the submission for this class.
 
 ## Milestone 2 (7th May, 5pm)
+
+Please find relevant information in the *project* directory
 
 **10% of the final grade**
 
