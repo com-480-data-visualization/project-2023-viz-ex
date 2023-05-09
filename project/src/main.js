@@ -92,42 +92,22 @@ const whenDocumentLoaded = (action) => {
 // Choropleth feature
 const style = (feature) => {
   function getColor(d) {
-    d = d[0]; // TODO: Change for propriety in dataset
-    return d > "W"
-      ? "#5C415D"
-      : d > "T"
-      ? "#e575bc"
-      : d > "P"
-      ? "#8bf9b9"
-      : d > "L"
-      ? "#76f5fc"
-      : d > "H"
-      ? "#f77059"
-      : d > "E"
-      ? "#FEB24C"
-      : d > "A"
-      ? "#64db57"
-      : "#b076fc";
+    return d > 3000 ? "#5C415D" : 
+          d > 2500 ? "#e575bc" :
+          d > 2000 ? "#8bf9b9" : 
+          d > 1500 ? "#76f5fc" : 
+          d > 1000 ? "#f77059" :
+          d > 500 ? "#FEB24C" :
+          d > 100 ? "#64db57" :
+          "#b076fc";
   }
   return {
-    fillColor: getColor(feature.properties.ADMIN),
+    fillColor: getColor(feature.properties.Total),
     weight: 2,
     opacity: 1,
     color: "#4f4f4f",
     dashArray: "2",
     fillOpacity: 0.9,
-  };
-};
- 
-const zoomOnCountry = (map) => {
-  return (event) => {
-    map.fitBounds(event.target.getBounds());
-  };
-};
- 
-const reset = (geojson) => {
-  return (event) => {
-    geojson.resetStyle(event.target);
   };
 };
  
@@ -138,7 +118,6 @@ const highlightFeature = (layer) => {
     dashArray: "",
     fillOpacity: 0.7,
   });
- 
   layer.bringToFront();
 };
  
@@ -154,6 +133,7 @@ const applyChoroplethMap = (map) => {
           geojsonLayer.resetStyle(layer);
         });
         layer.on("click", function (e) {
+          console.log(feature.properties.Total)
           map.fitBounds(e.target.getBounds());
         });
       },
@@ -178,7 +158,7 @@ const filterDataByYear = (map, data, year) => {
 whenDocumentLoaded(() => {
   if (!window.isScriptLoaded) {
     let map = initMap();
-    // applyChoroplethMap(map)
+    applyChoroplethMap(map)
  
     loadData((data) => {
       const yearSlider = document.querySelector("input");
