@@ -16,7 +16,6 @@ const initMap = () => {
       'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a>',
     maxZoom: 10,
   }).addTo(map);
- 
   return map;
 };
  
@@ -121,9 +120,9 @@ const highlightFeature = (layer) => {
   layer.bringToFront();
 };
  
-const applyChoroplethMap = (map) => {
+const initChoroplethMap = (map, layerGroup) => {
   json("/data/countries.geojson").then(function (data) {
-    var geojsonLayer = L.geoJson(data, {
+    var geojsonLayer = new L.GeoJSON(data, {
       style: style,
       onEachFeature: function (feature, layer) {
         layer.on("mouseover", function (e) {
@@ -137,9 +136,25 @@ const applyChoroplethMap = (map) => {
           map.fitBounds(e.target.getBounds());
         });
       },
-    }).addTo(map);
+    });
+    layerGroup.addLayer(geojsonLayer);
   });
 };
+
+const addChoroplethMap = (layerGroup, choroplethMapSource)=>{
+  const checkBox = document.querySelector("#showCountries")
+  checkBox.oninput = () => {
+    const isVisible = checkBox.checked
+    console.log(isVisible)
+    if(!isVisible) {
+      console.log("removing")
+      layerGroup.removeLayer(choroplethMapSource)
+      return;
+    }
+    console.log("Adding")
+    layerGroup.addLayer(choroplethMapSource)
+  }
+}
  
 const filterDataByYear = (map, data, year) => {
     let latLongs = data
@@ -158,10 +173,12 @@ const filterDataByYear = (map, data, year) => {
 whenDocumentLoaded(() => {
   if (!window.isScriptLoaded) {
     let map = initMap();
-    applyChoroplethMap(map)
- 
+    var layerGroup = new L.LayerGroup();
+    let choroplethSource = initChoroplethMap(map, layerGroup)
+    addChoroplethMap(map, layerGroup, choroplethSource)
+
     loadData((data) => {
-      const yearSlider = document.querySelector("input");
+      const yearSlider = document.getElementById("myRange");
       const year = document.getElementById("year")
       year.innerText = yearSlider.value
  
