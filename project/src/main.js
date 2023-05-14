@@ -24,7 +24,7 @@ const initMap = () => {
   return map;
 };
  
-const initD3MapLayer = (map, earthquakes) => {
+const initD3MapLayer = (map, svgLayer, earthquakes) => {
   // Select the svg area and add circles:
   let maxZoom = map.getMaxZoom();
   let minRadius = (zoom) => {
@@ -39,8 +39,7 @@ const initD3MapLayer = (map, earthquakes) => {
     let min = minRadius(height);
     return ((d.mag - 5.5) / (10 - 5.5)) * (max - min) + min;
   }
-  select("#mapid").select("svg")
-    .selectAll("myCircles")
+  svgLayer.selectAll("circle")
     .data(earthquakes)
     .enter()
     .append("circle")
@@ -156,7 +155,7 @@ const addChoroplethMap = (layerGroup, choroplethMapSource)=>{
   }
 }
  
-const filterDataByYear = (map, data, year) => {
+const filterDataByYear = (map, svgLayer, data, year) => {
   let latLongs = data
       .filter((d) => new Date(d.Date).getFullYear() === parseInt(year))
       .map((record) => {
@@ -166,15 +165,20 @@ const filterDataByYear = (map, data, year) => {
           mag: parseFloat(record.Magnitude),
         };
       });
-    initD3MapLayer(map, latLongs);
+    initD3MapLayer(map, svgLayer, latLongs);
 }
  
 whenDocumentLoaded(() => {
   if (!window.isScriptLoaded) {
     let map = initMap();
-    var layerGroup = new L.LayerGroup(); // For geojson
-    layerGroup.addTo(map)
-    // layerGroup.setZIndex(99);
+    // GeoJson Layer
+    var layerGroup = new L.LayerGroup();
+    // SVG Layer
+    var svgLayer = new L.SVG({pane:"markerPane"});
+    svgLayer.addTo(map);
+    var svg = select(map.getPanes().markerPane).select("svg");
+    
+    // Choropleth map
     let choroplethSource = initChoroplethMap(map, layerGroup);
     addChoroplethMap(map, layerGroup, choroplethSource);
     
@@ -183,15 +187,15 @@ whenDocumentLoaded(() => {
       const year = document.getElementById("year");
       year.innerText = yearSlider.value;
  
-      filterDataByYear(map, data, yearSlider.value);
+      filterDataByYear(map, svgLayer, data, yearSlider.value);
  
       yearSlider.oninput = () => {
         year.innerText = yearSlider.value;
       }
  
       yearSlider.onchange = () => {
-        select("#mapid").select("svg").selectAll("circle").remove();
-        filterDataByYear(map, data, yearSlider.value);
+        svg.selectAll("circle").remove();
+        filterDataByYear(map, svgLayer, data, yearSlider.value);
       };
     });
     window.isScriptLoaded = true;
