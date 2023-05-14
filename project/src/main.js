@@ -1,4 +1,4 @@
-import L, { bounds, geoJSON } from "leaflet";
+import L, { bounds } from "leaflet";
 import { select, selectAll } from "d3-selection";
 import { csv, filter, hierarchy, json } from "d3";
  
@@ -16,6 +16,11 @@ const initMap = () => {
       'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a>',
     maxZoom: 10,
   }).addTo(map);
+  
+  // SVG Layer
+  var svgLayer = new L.SVG({pane:'markerPane'})
+  svgLayer.addTo(map);
+
   return map;
 };
  
@@ -34,8 +39,7 @@ const initD3MapLayer = (map, earthquakes) => {
     let min = minRadius(height);
     return ((d.mag - 5.5) / (10 - 5.5)) * (max - min) + min;
   }
-  var svgOverlayElement = select("#mapid")
-    .select("svg")
+  select("#mapid").select("svg")
     .selectAll("myCircles")
     .data(earthquakes)
     .enter()
@@ -70,7 +74,6 @@ const initD3MapLayer = (map, earthquakes) => {
  
   // If the user change the map (zoom or drag), I update circle position:
   map.on("moveend", update);
-  return svgOverlayElement;
 };
  
 const loadData = (afterLoadCallback) => {
@@ -144,20 +147,17 @@ const initChoroplethMap = (map, layerGroup) => {
 const addChoroplethMap = (layerGroup, choroplethMapSource)=>{
   const checkBox = document.querySelector("#showCountries")
   checkBox.oninput = () => {
-    const isVisible = checkBox.checked
-    console.log(isVisible)
-    if(!isVisible) {
-      console.log("removing")
-      layerGroup.removeLayer(choroplethMapSource)
+    const isVisible = checkBox.checked;
+    if(isVisible) {
+      layerGroup.addLayer(choroplethMapSource);
       return;
     }
-    console.log("Adding")
-    layerGroup.addLayer(choroplethMapSource)
+    layerGroup.removeLayer(choroplethMapSource);
   }
 }
  
 const filterDataByYear = (map, data, year) => {
-    let latLongs = data
+  let latLongs = data
       .filter((d) => new Date(d.Date).getFullYear() === parseInt(year))
       .map((record) => {
         return {
@@ -166,32 +166,32 @@ const filterDataByYear = (map, data, year) => {
           mag: parseFloat(record.Magnitude),
         };
       });
-    L.svg().addTo(map);
     initD3MapLayer(map, latLongs);
 }
  
 whenDocumentLoaded(() => {
   if (!window.isScriptLoaded) {
     let map = initMap();
-    var layerGroup = new L.LayerGroup();
-    let choroplethSource = initChoroplethMap(map, layerGroup)
-    addChoroplethMap(map, layerGroup, choroplethSource)
-
+    var layerGroup = new L.LayerGroup(); // For geojson
+    layerGroup.addTo(map)
+    // layerGroup.setZIndex(99);
+    let choroplethSource = initChoroplethMap(map, layerGroup);
+    addChoroplethMap(map, layerGroup, choroplethSource);
+    
     loadData((data) => {
       const yearSlider = document.getElementById("myRange");
-      const year = document.getElementById("year")
-      year.innerText = yearSlider.value
+      const year = document.getElementById("year");
+      year.innerText = yearSlider.value;
  
-      filterDataByYear(map, data, yearSlider.value)
+      filterDataByYear(map, data, yearSlider.value);
  
       yearSlider.oninput = () => {
-        year.innerText = yearSlider.value
+        year.innerText = yearSlider.value;
       }
  
       yearSlider.onchange = () => {
-        map = map.remove()
-        map = initMap()
-        filterDataByYear(map, data, yearSlider.value)
+        select("#mapid").select("svg").selectAll("circle").remove();
+        filterDataByYear(map, data, yearSlider.value);
       };
     });
     window.isScriptLoaded = true;
