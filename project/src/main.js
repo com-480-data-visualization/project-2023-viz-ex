@@ -1,146 +1,203 @@
-import L, { bounds } from 'leaflet'
-import { select, selectAll } from 'd3-selection'
-import { csv, hierarchy } from 'd3'
-import { initLegend } from './legend'
-
-const maxYear = 2016
-const minYear = 1965
-
+import L, { bounds } from "leaflet";
+import { select, selectAll } from "d3-selection";
+import { csv, filter, hierarchy, json } from "d3";
+ 
 const initMap = () => {
-    let map = L
-	    .map('mapid')
-	    .setView([40.737, -73.923], 2)   // center position + zoom
-        .setMaxBounds([[-90,-180], [90,180]]) // set max bounds to entire map
-    
-	// Add a tile to the map = a background. Comes from OpenStreetmap
-	L.tileLayer(
-		'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-		attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a>',
-		maxZoom: 10,
-	}).addTo(map);
-	
-	// Add a svg layer to the map
-	L.svg().addTo(map);
-    return map;
-}
+  let map = L.map("mapid")
+    .setView([40.737, -73.923], 2) // center position + zoom
+    .setMaxBounds([
+      [-90, -180],
+      [90, 180],
+    ]); // set max bounds to entire map
+ 
+  // Add a tile to the map = a background. Comes from OpenStreetmap
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    attribution:
+      'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a>',
+    maxZoom: 10,
+  }).addTo(map);
+  
+  // SVG Layer
+  var svgLayer = new L.SVG({pane:'markerPane'})
+  svgLayer.addTo(map);
 
-const initD3MapLayer = (map, earthquakes) => {
-    // Select the svg area and add circles:
-    let maxZoom = map.getMaxZoom()
-    let minRadius = (zoom) => {
-        return 2
-    }
-    let maxRadius = (zoom) => {
-        return 64 * (zoom / maxZoom) + minRadius(zoom)
-    }
-
-    function updateRadius(height, d) {
-        let max = maxRadius(height)
-        let min = minRadius(height)
-        return (d.mag - 5.5)/(10 - 5.5) * (max - min) + min
-    }
-
-    select("#mapid")
-        .select("svg")
-        .selectAll("myCircles")
-        .data(earthquakes)
-        .enter()
-        .append("circle")
-            .attr("cx", function(d){ return map.latLngToLayerPoint([d.lat, d.long]).x })
-            .attr("cy", function(d){ return map.latLngToLayerPoint([d.lat, d.long]).y })
-            .attr("r", function(d) { return updateRadius(map.getZoom(), d) })
-            .style("fill", "steelblue")
-            .attr("stroke", "steelblue")
-            .attr("stroke-width", 3)
-            .attr("fill-opacity", .4)
-      
-    // Function that update circle position if something change
-    function update() {
-        select("#mapid")
-            .select("svg")
-            .selectAll("circle")
-                .attr("cx", function(d){ return map.latLngToLayerPoint([d.lat, d.long]).x })
-                .attr("cy", function(d){ return map.latLngToLayerPoint([d.lat, d.long]).y })
-                .attr("r", function(d) { return updateRadius(map.getZoom(), d) })
-    }
-    
-    // If the user change the map (zoom or drag), I update circle position:
-    map.on("moveend", update)
-}
-
-const loadData = (afterLoadCallback) => {
-    csv("/data/database.csv").then(data => {
-        console.log("Data Loaded")
-        afterLoadCallback(data)
+  return map;
+};
+ 
+const initD3MapLayer = (map, svgLayer, earthquakes) => {
+  // Select the svg area and add circles:
+  let maxZoom = map.getMaxZoom();
+  let minRadius = (zoom) => {
+    return 2;
+  };
+  let maxRadius = (zoom) => {
+    return 64 * (zoom / maxZoom) + minRadius(zoom);
+  };
+ 
+  function updateRadius(height, d) {
+    let max = maxRadius(height);
+    let min = minRadius(height);
+    return ((d.mag - 5.5) / (10 - 5.5)) * (max - min) + min;
+  }
+  svgLayer.selectAll("circle")
+    .data(earthquakes)
+    .enter()
+    .append("circle")
+    .attr("cx", function (d) {
+      return map.latLngToLayerPoint([d.lat, d.long]).x;
     })
-}
-
-const bindButtonOnClickEvents = (legendHandler, rawData) => {
-    var countryData = null
-    document.getElementById("country-bouton").onclick = () => {
-        let countryNameInput = document.getElementById('country')
-        let countryName = countryNameInput.value
-
-        let countryDataPerYear = rawData
-            .filter(data => data.Country == countryName)
-            .reduce((rv, x) => {
-                let year = new Date(x.Date).getFullYear()
-                let yearData = rv[year] ?? [];
-                yearData.push(x)
-                rv[year] = yearData
-                return rv;
-            }, {})
-        countryData = [...Array(maxYear - minYear + 1).keys()]
-            .map((yearDelta) => {
-                let year = minYear + yearDelta
-                let records = countryDataPerYear[year] ?? []
-                return {
-                    year: year,
-                    nbQuakes: records.length
-                }
-            })
-        console.log('data', countryData)
-        legendHandler.openOrUpdate(countryData)
-    }
-
-    document.getElementById("close-legend").onclick = () => {
-        if (!countryData) {
-            return
-        }
-        legendHandler.close()
-    }
-
-    document.getElementById("open-legend").onclick = () => {
-        legendHandler.open(countryData)
-    }
-}
-
+    .attr("cy", function (d) {
+      return map.latLngToLayerPoint([d.lat, d.long]).y;
+    })
+    .attr("r", function (d) {
+      return updateRadius(map.getZoom(), d);
+    })
+    .style("fill", "steelblue")
+    .attr("stroke", "steelblue")
+    .attr("stroke-width", 3)
+    .attr("fill-opacity", 0.4);
+ 
+  // Function that update circle position if something change
+  function update() {
+    selectAll("circle")
+      .attr("cx", function (d) {
+        return map.latLngToLayerPoint([d.lat, d.long]).x;
+      })
+      .attr("cy", function (d) {
+        return map.latLngToLayerPoint([d.lat, d.long]).y;
+      })
+      .attr("r", function (d) {
+        return updateRadius(map.getZoom(), d);
+      });
+  }
+ 
+  // If the user change the map (zoom or drag), I update circle position:
+  map.on("moveend", update);
+};
+ 
+const loadData = (afterLoadCallback) => {
+  csv("/data/database.csv").then((data) => {
+    console.log("Data Loaded");
+    afterLoadCallback(data);
+  });
+};
+ 
 const whenDocumentLoaded = (action) => {
-	if (document.readyState === "loading") {
-		document.addEventListener("DOMContentLoaded", action);
-	} else {
-		action();
-	}
-}
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", action);
+  } else {
+    action();
+  }
+};
+ 
+// Choropleth feature
+const style = (feature) => {
+  function getColor(d) {
+    return d > 3000 ? "#5C415D" : 
+          d > 2500 ? "#e575bc" :
+          d > 2000 ? "#8bf9b9" : 
+          d > 1500 ? "#76f5fc" : 
+          d > 1000 ? "#f77059" :
+          d > 500 ? "#FEB24C" :
+          d > 100 ? "#64db57" :
+          "#b076fc";
+  }
+  return {
+    fillColor: getColor(feature.properties.Total),
+    weight: 2,
+    opacity: 1,
+    color: "#4f4f4f",
+    dashArray: "2",
+    fillOpacity: 0.9,
+  };
+};
+ 
+const highlightFeature = (layer) => {
+  layer.setStyle({
+    weight: 3,
+    color: "white",
+    dashArray: "",
+    fillOpacity: 0.7,
+  });
+  layer.bringToFront();
+};
+ 
+const initChoroplethMap = (map, layerGroup) => {
+  json("/data/countries.geojson").then(function (data) {
+    var geojsonLayer = new L.GeoJSON(data, {
+      style: style,
+      onEachFeature: function (feature, layer) {
+        layer.on("mouseover", function (e) {
+          highlightFeature(layer);
+        });
+        layer.on("mouseout", function () {
+          geojsonLayer.resetStyle(layer);
+        });
+        layer.on("click", function (e) {
+          console.log(feature.properties.Total)
+          map.fitBounds(e.target.getBounds());
+        });
+      },
+    });
+    layerGroup.addLayer(geojsonLayer);
+  });
+};
 
-whenDocumentLoaded(() => {
-    if (!window.isScriptLoaded) {
-        console.log('load map')
-        let map = initMap()
-
-        loadData((data) => {
-            let latLongs = data.map((record) => {
-                return { 
-                    lat: parseFloat(record.Latitude),
-                    long: parseFloat(record.Longitude),
-                    mag: parseFloat(record.Magnitude)
-                }
-            })
-            initD3MapLayer(map, latLongs)
-            let legendHandler = initLegend(map)
-            bindButtonOnClickEvents(legendHandler, data)
-        })
-
-        window.isScriptLoaded = true;
+const addChoroplethMap = (layerGroup, choroplethMapSource)=>{
+  const checkBox = document.querySelector("#showCountries")
+  checkBox.oninput = () => {
+    const isVisible = checkBox.checked;
+    if(isVisible) {
+      layerGroup.addLayer(choroplethMapSource);
+      return;
     }
+    layerGroup.removeLayer(choroplethMapSource);
+  }
+}
+ 
+const filterDataByYear = (map, svgLayer, data, year) => {
+  let latLongs = data
+      .filter((d) => new Date(d.Date).getFullYear() === parseInt(year))
+      .map((record) => {
+        return {
+          lat: parseFloat(record.Latitude),
+          long: parseFloat(record.Longitude),
+          mag: parseFloat(record.Magnitude),
+        };
+      });
+    initD3MapLayer(map, svgLayer, latLongs);
+}
+ 
+whenDocumentLoaded(() => {
+  if (!window.isScriptLoaded) {
+    let map = initMap();
+    // GeoJson Layer
+    var layerGroup = new L.LayerGroup();
+    // SVG Layer
+    var svgLayer = new L.SVG({pane:"markerPane"});
+    svgLayer.addTo(map);
+    var svg = select(map.getPanes().markerPane).select("svg");
+    
+    // Choropleth map
+    let choroplethSource = initChoroplethMap(map, layerGroup);
+    addChoroplethMap(map, layerGroup, choroplethSource);
+    
+    loadData((data) => {
+      const yearSlider = document.getElementById("myRange");
+      const year = document.getElementById("year");
+      year.innerText = yearSlider.value;
+ 
+      filterDataByYear(map, svgLayer, data, yearSlider.value);
+ 
+      yearSlider.oninput = () => {
+        year.innerText = yearSlider.value;
+      }
+ 
+      yearSlider.onchange = () => {
+        svg.selectAll("circle").remove();
+        filterDataByYear(map, svgLayer, data, yearSlider.value);
+      };
+    });
+    window.isScriptLoaded = true;
+  }
 });
