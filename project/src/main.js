@@ -187,7 +187,7 @@ whenDocumentLoaded(() => {
       const year = document.getElementById("year");
       year.innerText = yearSlider.value;
  
-      filterDataByYear(map, svgLayer, data, yearSlider.value);
+      filterDataByYear(map, svg, data, yearSlider.value);
  
       yearSlider.oninput = () => {
         year.innerText = yearSlider.value;
@@ -195,7 +195,7 @@ whenDocumentLoaded(() => {
  
       yearSlider.onchange = () => {
         svg.selectAll("circle").remove();
-        filterDataByYear(map, svgLayer, data, yearSlider.value);
+        filterDataByYear(map, svg, data, yearSlider.value);
       };
     });
     window.isScriptLoaded = true;
