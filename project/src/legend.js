@@ -84,6 +84,7 @@ export class LegendDataHandler {
     }
 
     openOrUpdate(data) {
+        this.close()
         if (this.isOpen) {
             this.update(data)
             return
@@ -109,35 +110,7 @@ export class LegendDataHandler {
 }
 
 export const initLegend = (map) => {
-    console.log('POPUP')
-
-    let mockData = [
-        { x: 1, y: 2 },
-        { x: 2, y: 3 },
-        { x: 3, y: 5 },
-        { x: 4, y: 10 },
-        { x: 5, y: 7 },
-        { x: 6, y: 1 },
-    ]
-
-    let legendHandler = new LegendDataHandler(map)
-
-    // let legend = L.control({ position: 'bottomright' })
-
-    // legend.update = function() {
-    //     console.log('update')
-    //     displayData(mockData)
-    // }
-
-    // legend.onAdd = function(map) {
-    //     this._div = L.DomUtil.create('div', 'info'); // create a div with a class "info"
-    //     this._div.innerHTML = getLegendContent()
-    //     return this._div;
-    // }
-
-    // legend.addTo(map)
-    // legend.update()
-    return legendHandler
+    return new LegendDataHandler(map)
 }
 
 export const filterDataPerCountry = (country, rawData) => {

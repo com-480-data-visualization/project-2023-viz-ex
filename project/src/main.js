@@ -59,8 +59,8 @@ const initD3MapLayer = (map, svgLayer, earthquakes) => {
     .attr("fill-opacity", 0.4);
  
   // Function that update circle position if something change
-  function update() {
-    selectAll("circle")
+  function update(svg) {
+    svg.selectAll("circle")
       .attr("cx", function (d) {
         return map.latLngToLayerPoint([d.lat, d.long]).x;
       })
@@ -73,7 +73,7 @@ const initD3MapLayer = (map, svgLayer, earthquakes) => {
   }
  
   // If the user change the map (zoom or drag), I update circle position:
-  map.on("moveend", update);
+  map.on("moveend", () => update(svgLayer));
 };
  
 const loadData = (afterLoadCallback) => {
