@@ -13,6 +13,7 @@ import {
 import { MAX_YEAR, MIN_YEAR } from './constants';
 
 const QUAKES_BY_COUNTRY_ID = 'contryQuakeViz'
+const LEGEND_TITLE_ID = 'legend-country-title'
 
 const margin = {top: 3, right: 10, bottom: 10, left: 20},
     width = 360 - margin.left - margin.right,
@@ -71,41 +72,30 @@ const displayData = (yearRecords) => {
 }
 
 export class LegendDataHandler {
-    isOpen = false
     constructor(map) {
         this.map = map
         this.legend = L.control({ position: 'topright' })
+    }
+
+    setLegend(country) {
         this.legend.onAdd = function() {
             this._div = L.DomUtil.create('div', 'info');
             this._div.id = 'country_info_1'
-            this._div.innerHTML = getLegendContent()
+            this._div.innerHTML = getLegendContent(country)
             return this._div
         }
     }
 
-    openOrUpdate(data) {
+    open(data, country) {
         this.close()
-        if (this.isOpen) {
-            this.update(data)
-            return
-        }
-        this.open(data)
-    }
-
-    update(data) {
-        displayData(data)
-    }
-
-    open(data) {
+        this.setLegend(country)
         this.legend.addTo(this.map)
-        this.update(data)
-        this.isOpen = true
+        displayData(data)
     }
 
     close() {
         let countryInfoDiv = document.getElementById('country_info_1')
         countryInfoDiv?.remove()
-        this.isOpen = false
     }
 }
 
@@ -135,8 +125,11 @@ export const filterDataPerCountry = (country, rawData) => {
     return countryData
 }
 
-const getLegendContent = () => {
+const getLegendContent = (title) => {
     return `
-        <div id="${QUAKES_BY_COUNTRY_ID}" style="height: 100%; width:100%"></div>
+        <div class="legend">
+            <h1>${title}</h1>
+            <div id="${QUAKES_BY_COUNTRY_ID}" style="height: 100%; width:100%"></div>
+        </div>
     `
 }

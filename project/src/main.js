@@ -193,7 +193,7 @@ whenDocumentLoaded(() => {
         console.log('props', props)
         let country = props.ADMIN
         let countryData = filterDataPerCountry(country, data)
-        legendHandler.openOrUpdate(countryData)
+        legendHandler.open(countryData, country)
       });
       addChoroplethMap(map, layerGroup, choroplethSource);
       yearSlider.oninput = () => {
