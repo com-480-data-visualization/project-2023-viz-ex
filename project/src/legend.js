@@ -10,6 +10,7 @@ import {
     line,
     timeParse,
 } from 'd3';
+import { MAX_YEAR, MIN_YEAR } from './constants';
 
 const QUAKES_BY_COUNTRY_ID = 'contryQuakeViz'
 
@@ -139,7 +140,27 @@ export const initLegend = (map) => {
     return legendHandler
 }
 
-
+export const filterDataPerCountry = (country, rawData) => {
+    let countryDataPerYear = rawData
+        .filter(data => data.Country == country)
+        .reduce((rv, x) => {
+            let year = new Date(x.Date).getFullYear()
+            let yearData = rv[year] ?? [];
+            yearData.push(x)
+            rv[year] = yearData
+            return rv;
+        }, {})
+    let countryData = [...Array(MAX_YEAR - MIN_YEAR + 1).keys()]
+        .map((yearDelta) => {
+            let year = MIN_YEAR + yearDelta
+            let records = countryDataPerYear[year] ?? []
+            return {
+                year: year,
+                nbQuakes: records.length
+            }
+        })
+    return countryData
+}
 
 const getLegendContent = () => {
     return `

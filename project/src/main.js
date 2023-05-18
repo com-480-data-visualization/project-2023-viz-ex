@@ -1,7 +1,8 @@
 import L, { bounds } from "leaflet";
 import { select, selectAll } from "d3-selection";
-import { csv, filter, hierarchy, json } from "d3";
- 
+import { count, csv, filter, hierarchy, json } from "d3";
+import { initLegend, filterDataPerCountry } from "./legend";
+
 const initMap = () => {
   let map = L.map("mapid")
     .setView([40.737, -73.923], 2) // center position + zoom
@@ -122,7 +123,7 @@ const highlightFeature = (layer) => {
   layer.bringToFront();
 };
  
-const initChoroplethMap = (map, layerGroup) => {
+const initChoroplethMap = (map, layerGroup, onCountryClick) => {
   json("/data/countries.geojson").then(function (data) {
     var geojsonLayer = new L.GeoJSON(data, {
       style: style,
@@ -134,7 +135,8 @@ const initChoroplethMap = (map, layerGroup) => {
           geojsonLayer.resetStyle(layer);
         });
         layer.on("click", function (e) {
-          console.log(feature.properties.Total)
+          console.log(feature.properties)
+          onCountryClick(feature.properties);
           map.fitBounds(e.target.getBounds());
         });
       },
@@ -165,7 +167,7 @@ const filterDataByYear = (map, svgLayer, data, year) => {
           mag: parseFloat(record.Magnitude),
         };
       });
-    initD3MapLayer(map, svgLayer, latLongs);
+  initD3MapLayer(map, svgLayer, latLongs);
 }
  
 whenDocumentLoaded(() => {
@@ -177,18 +179,23 @@ whenDocumentLoaded(() => {
     var svgLayer = new L.SVG({pane:"markerPane"});
     svgLayer.addTo(map);
     var svg = select(map.getPanes().markerPane).select("svg");
-    
-    // Choropleth map
-    let choroplethSource = initChoroplethMap(map, layerGroup);
-    addChoroplethMap(map, layerGroup, choroplethSource);
-    
+
     loadData((data) => {
       const yearSlider = document.getElementById("myRange");
       const year = document.getElementById("year");
       year.innerText = yearSlider.value;
  
       filterDataByYear(map, svg, data, yearSlider.value);
- 
+      let legendHandler = initLegend(map)
+
+      // Choropleth map
+      let choroplethSource = initChoroplethMap(map, layerGroup, (props) => {
+        console.log('props', props)
+        let country = props.ADMIN
+        let countryData = filterDataPerCountry(country, data)
+        legendHandler.openOrUpdate(countryData)
+      });
+      addChoroplethMap(map, layerGroup, choroplethSource);
       yearSlider.oninput = () => {
         year.innerText = yearSlider.value;
       }
