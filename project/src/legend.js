@@ -13,25 +13,25 @@ import {
 import { MAX_YEAR, MIN_YEAR } from './constants';
 
 const QUAKES_BY_COUNTRY_ID = 'contryQuakeViz'
-const LEGEND_TITLE_ID = 'legend-country-title'
 
-const margin = {top: 3, right: 10, bottom: 10, left: 20},
-    width = 360 - margin.left - margin.right,
-    height = 300 - margin.top - margin.bottom;
-
+const margin = {top: 10, right: 15, bottom: 30, left: 30 }
 
 const displayData = (yearRecords) => {
+    let width = 380 - margin.left - margin.right
+    let height = 285 - margin.top - margin.bottom
+
     let svg = select(`#${QUAKES_BY_COUNTRY_ID}`)
             .append('svg')
-                .attr('width', 380)
-                .attr('height', 320)
+                .attr('width', width + margin.left + margin.right)
+                .attr('height', height + margin.top + margin.bottom)
             .append("g")
                 .attr("transform",
                   `translate(${margin.left},${margin.top})`);
+                  
 
     let data = yearRecords.map(({ year, nbQuakes }) => { 
-            return { year: new Date(year, 0), nbQuakes: nbQuakes }
-        })
+        return { year: new Date(year, 0), nbQuakes: nbQuakes }
+    })
 
     let x = scaleTime()
         .domain(extent(data, d => d.year))
