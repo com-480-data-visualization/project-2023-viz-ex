@@ -14,10 +14,10 @@ import { MAX_YEAR, MIN_YEAR } from './constants';
 
 const QUAKES_BY_COUNTRY_ID = 'contryQuakeViz'
 
-const margin = {top: 10, right: 15, bottom: 30, left: 30 }
+const margin = {top: 10, right: 15, bottom: 35, left: 40 }
 
 const displayData = (yearRecords) => {
-    let width = 380 - margin.left - margin.right
+    let width = 420 - margin.left - margin.right
     let height = 285 - margin.top - margin.bottom
 
     let svg = select(`#${QUAKES_BY_COUNTRY_ID}`)
@@ -36,15 +36,35 @@ const displayData = (yearRecords) => {
     let x = scaleTime()
         .domain(extent(data, d => d.year))
         .range([ 0, width ]);
+
+    
+    
     svg.append("g")
         .attr("transform", "translate(0," + height + ")")
         .call(axisBottom(x));
 
+    svg.append("text")
+        .attr("class", "x label")
+        .attr("text-anchor", "middle")
+        .attr("x", width/2)
+        .attr("y", height + 32)
+        .text("Year");
+
     let y = scaleLinear()
         .domain(extent(data, d => d.nbQuakes))
-        .range([ height, 0 ]);
+        .range([ height, 0 ])
+
     svg.append("g")
         .call(axisLeft(y));
+
+    svg.append("text")
+        .attr("class", "y label")
+        .attr("text-anchor", "end")
+        .attr("y", -40)
+        .attr("x", -height/5)
+        .attr("dy", ".75em")
+        .attr("transform", "rotate(-90)")
+        .text("Number of Earth Quakes");
 
     svg.append("path")
         .datum(data)
