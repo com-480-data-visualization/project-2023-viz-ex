@@ -1,7 +1,7 @@
 import L from "leaflet";
 import { csv, json } from "d3";
 import { initLegend, filterDataPerCountry } from "./legend";
-import { initTimeEarthQuakeMap, addDataToTimeMap } from "./map-time-earthquakes";
+import { initTimeEarthQuakeMap, addDataToTimeMap } from "./time-map";
  
 const loadData = (afterLoadCallback) => {
   csv("/data/database.csv").then((data) => {
