@@ -1,7 +1,7 @@
 import { initMap } from "./map";
 import { select } from "d3-selection";
 
-export const TIME_QUAKES_MAP_ID = "map1";
+export const TIME_QUAKES_MAP_ID = "time-map";
 
 export const initTimeEarthQuakeMap = (mapId) => {
     let map = initMap(mapId);

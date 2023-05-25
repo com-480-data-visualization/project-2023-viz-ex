@@ -1,7 +1,7 @@
 import L from "leaflet";
 import { csv, json } from "d3";
 import { initLegend, filterDataPerCountry } from "./legend";
-import { initTimeEarthQuakeMap, addDataToTimeMap } from "./map/time-map";
+import { initTimeEarthQuakeMap, addDataToTimeMap, TIME_QUAKES_MAP_ID } from "./map/time-map";
  
 const loadData = (afterLoadCallback) => {
   csv("/data/database.csv").then((data) => {
@@ -89,7 +89,7 @@ whenDocumentLoaded(() => {
     // GeoJson Layer
     var layerGroup = new L.LayerGroup();
 
-    let timeMap = initTimeEarthQuakeMap("map1")
+    let timeMap = initTimeEarthQuakeMap(TIME_QUAKES_MAP_ID)
 
     loadData((data) => {
       addDataToTimeMap(timeMap, data)
