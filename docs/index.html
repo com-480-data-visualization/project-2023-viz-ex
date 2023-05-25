@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="content-type" content="text/html; charset=utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<title>VIZ-EX Project</title>
+
+	<link rel="stylesheet" href="style.css">
+	<link rel="stylesheet" href="main.css">
+	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.8.0/dist/leaflet.css"
+		integrity="sha512-hoalWLoI8r4UszCkZ5kL8vayOGVae1oxXe/2A4AO6J9+580uKHDO3JdHb7NzwwzK5xr/Fs0W40kiNHxM9vyTtQ=="
+		crossorigin="" />
+<script defer src="main.js"></script></head>
+
+<body>
+	<div class="page-container">
+		<div class="page">
+			<div>
+				<h1>Are there more earthquakes now, than before?</h1>
+			</div>
+			<div id="time-map" class="map"></div>
+			<!-- TODO: add hover on each points -->
+			<!-- TODO: add a legend for map -->
+			<!-- TODO: add heat map -->
+			<div id="slider">
+				<input type="range" min="1965" max="2016" value="1965" class="slider" id="myRange">
+				<div id="year"></div>
+			</div>
+			</div>
+			<div class="page">
+				<div>
+					<h1>As we know, earthquakes are locally and time dependant</h1>
+					<h3>TODO: Show regions where most earthquake</h3>
+					<!-- Show regions where most earthquake -->
+				</div>
+				<div id="country-map" class="map"></div>
+			</div>
+			<div class="page">
+				<div>
+					<h1>The higher the magnitude, the more damages humans feel</h1>
+					<h3>TODO: Show top 5 biggest earthquakes + impacts</h3>
+					<!-- Show top 5 biggest earthquakes + impacts -->
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+
+<script src="main.js"></script>
+
+</html>

@@ -5,7 +5,8 @@
   "private": true,
   "scripts": {
     "start": "webpack serve",
-    "build": "webpack"
+    "build": "webpack",
+    "build-pages": "rm -rf dist ../docs && webpack && mkdir ../docs && cp -R dist/** ../docs/"
   },
   "author": "",
   "license": "ISC",
