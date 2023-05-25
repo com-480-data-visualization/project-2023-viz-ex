@@ -2,28 +2,7 @@ import L, { bounds } from "leaflet";
 import { select, selectAll } from "d3-selection";
 import { count, csv, filter, hierarchy, json } from "d3";
 import { initLegend, filterDataPerCountry } from "./legend";
-
-const initMap = () => {
-  let map = L.map("mapid")
-    .setView([40.737, -73.923], 2) // center position + zoom
-    .setMaxBounds([
-      [-90, -180],
-      [90, 180],
-    ]); // set max bounds to entire map
- 
-  // Add a tile to the map = a background. Comes from OpenStreetmap
-  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-    attribution:
-      'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a>',
-    maxZoom: 10,
-  }).addTo(map);
-  
-  // SVG Layer
-  var svgLayer = new L.SVG({pane:'markerPane'})
-  svgLayer.addTo(map);
-
-  return map;
-};
+import { initTimeEarthQuakeMap, addDataToTimeMap } from "./map-time-earthquakes";
  
 const initD3MapLayer = (map, svgLayer, earthquakes) => {
   // Select the svg area and add circles:
@@ -169,23 +148,25 @@ const filterDataByYear = (map, svgLayer, data, year) => {
       });
   initD3MapLayer(map, svgLayer, latLongs);
 }
- 
+
 whenDocumentLoaded(() => {
   if (!window.isScriptLoaded) {
-    let map = initMap();
+    // let map = initMap("map1");
     // GeoJson Layer
     var layerGroup = new L.LayerGroup();
     // SVG Layer
-    var svgLayer = new L.SVG({pane:"markerPane"});
-    svgLayer.addTo(map);
-    var svg = select(map.getPanes().markerPane).select("svg");
+    // var svgLayer = new L.SVG({pane:"markerPane"});
+    // svgLayer.addTo(map);
+    // var svg = select(map.getPanes().markerPane).select("svg");
+    let timeMap = initTimeEarthQuakeMap("map1")
 
     loadData((data) => {
-      const yearSlider = document.getElementById("myRange");
-      const year = document.getElementById("year");
-      year.innerText = yearSlider.value;
+      addDataToTimeMap(timeMap, data)
+      // const yearSlider = document.getElementById("myRange");
+      // const year = document.getElementById("year");
+      // year.innerText = yearSlider.value;
  
-      filterDataByYear(map, svg, data, yearSlider.value);
+      // filterDataByYear(map, svg, data, yearSlider.value);
       let legendHandler = initLegend(map)
 
       // Choropleth map
@@ -196,14 +177,14 @@ whenDocumentLoaded(() => {
         legendHandler.open(countryData, country)
       });
       addChoroplethMap(map, layerGroup, choroplethSource);
-      yearSlider.oninput = () => {
-        year.innerText = yearSlider.value;
-      }
+      // yearSlider.oninput = () => {
+      //   year.innerText = yearSlider.value;
+      // }
  
-      yearSlider.onchange = () => {
-        svg.selectAll("circle").remove();
-        filterDataByYear(map, svg, data, yearSlider.value);
-      };
+      // yearSlider.onchange = () => {
+      //   svg.selectAll("circle").remove();
+      //   filterDataByYear(map, svg, data, yearSlider.value);
+      // };
     });
     window.isScriptLoaded = true;
   }
