@@ -1,5 +1,5 @@
 import { initMap } from "./map";
-import { select, selectAll } from "d3-selection";
+import { select } from "d3-selection";
 
 export const TIME_QUAKES_MAP_ID = "map1";
 
