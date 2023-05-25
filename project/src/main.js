@@ -1,59 +1,7 @@
-import L, { bounds } from "leaflet";
-import { select, selectAll } from "d3-selection";
-import { count, csv, filter, hierarchy, json } from "d3";
+import L from "leaflet";
+import { csv, json } from "d3";
 import { initLegend, filterDataPerCountry } from "./legend";
 import { initTimeEarthQuakeMap, addDataToTimeMap } from "./map-time-earthquakes";
- 
-const initD3MapLayer = (map, svgLayer, earthquakes) => {
-  // Select the svg area and add circles:
-  let maxZoom = map.getMaxZoom();
-  let minRadius = (zoom) => {
-    return 2;
-  };
-  let maxRadius = (zoom) => {
-    return 64 * (zoom / maxZoom) + minRadius(zoom);
-  };
- 
-  function updateRadius(height, d) {
-    let max = maxRadius(height);
-    let min = minRadius(height);
-    return ((d.mag - 5.5) / (10 - 5.5)) * (max - min) + min;
-  }
-  svgLayer.selectAll("circle")
-    .data(earthquakes)
-    .enter()
-    .append("circle")
-    .attr("cx", function (d) {
-      return map.latLngToLayerPoint([d.lat, d.long]).x;
-    })
-    .attr("cy", function (d) {
-      return map.latLngToLayerPoint([d.lat, d.long]).y;
-    })
-    .attr("r", function (d) {
-      return updateRadius(map.getZoom(), d);
-    })
-    .style("fill", "steelblue")
-    .attr("stroke", "steelblue")
-    .attr("stroke-width", 3)
-    .attr("fill-opacity", 0.4);
- 
-  // Function that update circle position if something change
-  function update(svg) {
-    svg.selectAll("circle")
-      .attr("cx", function (d) {
-        return map.latLngToLayerPoint([d.lat, d.long]).x;
-      })
-      .attr("cy", function (d) {
-        return map.latLngToLayerPoint([d.lat, d.long]).y;
-      })
-      .attr("r", function (d) {
-        return updateRadius(map.getZoom(), d);
-      });
-  }
- 
-  // If the user change the map (zoom or drag), I update circle position:
-  map.on("moveend", () => update(svgLayer));
-};
  
 const loadData = (afterLoadCallback) => {
   csv("/data/database.csv").then((data) => {
@@ -135,36 +83,16 @@ const addChoroplethMap = (layerGroup, choroplethMapSource)=>{
     layerGroup.removeLayer(choroplethMapSource);
   }
 }
- 
-const filterDataByYear = (map, svgLayer, data, year) => {
-  let latLongs = data
-      .filter((d) => new Date(d.Date).getFullYear() === parseInt(year))
-      .map((record) => {
-        return {
-          lat: parseFloat(record.Latitude),
-          long: parseFloat(record.Longitude),
-          mag: parseFloat(record.Magnitude),
-        };
-      });
-  initD3MapLayer(map, svgLayer, latLongs);
-}
 
 whenDocumentLoaded(() => {
   if (!window.isScriptLoaded) {
-    // let map = initMap("map1");
     // GeoJson Layer
     var layerGroup = new L.LayerGroup();
-    // SVG Layer
-    // var svgLayer = new L.SVG({pane:"markerPane"});
-    // svgLayer.addTo(map);
-    // var svg = select(map.getPanes().markerPane).select("svg");
+
     let timeMap = initTimeEarthQuakeMap("map1")
 
     loadData((data) => {
       addDataToTimeMap(timeMap, data)
-      // const yearSlider = document.getElementById("myRange");
-      // const year = document.getElementById("year");
-      // year.innerText = yearSlider.value;
  
       // filterDataByYear(map, svg, data, yearSlider.value);
       let legendHandler = initLegend(map)
@@ -177,14 +105,6 @@ whenDocumentLoaded(() => {
         legendHandler.open(countryData, country)
       });
       addChoroplethMap(map, layerGroup, choroplethSource);
-      // yearSlider.oninput = () => {
-      //   year.innerText = yearSlider.value;
-      // }
- 
-      // yearSlider.onchange = () => {
-      //   svg.selectAll("circle").remove();
-      //   filterDataByYear(map, svg, data, yearSlider.value);
-      // };
     });
     window.isScriptLoaded = true;
   }
