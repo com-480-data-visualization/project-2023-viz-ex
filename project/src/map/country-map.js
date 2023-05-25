@@ -12,11 +12,18 @@ export const initCountryEarthQuakeMap = (mapId) => {
 export const addDataToCountryMap = (map, data) => {
     let legendHandler = initLegend(map);
     let layerGroup = new L.LayerGroup();
-    let choroplethSource = initChoroplethMap(map, layerGroup, (props) => {
-        let country = props.ADMIN;
-        let countryData = filterDataPerCountry(country, data);
-        legendHandler.open(countryData, country);
-    });
+    let choroplethSource = initChoroplethMap(
+        map,
+        layerGroup, 
+        (props) => {
+            let country = props.ADMIN;
+            let countryData = filterDataPerCountry(country, data);
+            legendHandler.open(countryData, country);
+        },
+        () => {
+            legendHandler.close();
+        },
+    );
     addChoroplethMap(map, layerGroup, choroplethSource);
 }
 
@@ -53,24 +60,48 @@ const highlightFeature = (layer) => {
     layer.bringToFront();
 };
 
-const initChoroplethMap = (map, layerGroup, onCountryClick) => {
+const initChoroplethMap = (map, layerGroup, onCountryClick, onOutsideClick) => {
     json("/data/countries.geojson").then(function (data) {
+        var clickedFeature = undefined;
+        
         var geojsonLayer = new L.GeoJSON(data, {
             style: style,
             onEachFeature: function (feature, layer) {
                 layer.on("mouseover", function (e) {
                     highlightFeature(layer);
                 });
+
                 layer.on("mouseout", function () {
+                    if (clickedFeature === layer) {
+                        return;
+                    }
                     geojsonLayer.resetStyle(layer);
                 });
+
                 layer.on("click", function (e) {
-                    console.log(feature.properties)
+                    if (clickedFeature !== layer) {
+                        geojsonLayer.resetStyle(clickedFeature);
+                    }
+
                     onCountryClick(feature.properties);
+                    
                     map.fitBounds(e.target.getBounds());
+                    highlightFeature(layer);
+
+                    clickedFeature = layer;
+                    L.DomEvent.stopPropagation(e);
                 });
             },
         });
+        map.on("click", () => {
+            if (!clickedFeature) {
+                return;
+            }
+            
+            geojsonLayer.resetStyle(clickedFeature);
+            clickedFeature = undefined;
+            onOutsideClick();
+        })
         layerGroup.addLayer(geojsonLayer);
     });
 };
