@@ -14,11 +14,8 @@ export const initMap = (mapId) => {
       attribution:
         'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a>',
       maxZoom: 10,
+      minZoom: 2,
     }).addTo(map);
-    
-    // // SVG Layer
-    // var svgLayer = new L.SVG({pane:'markerPane'})
-    // svgLayer.addTo(map);
   
     return map;
 }
