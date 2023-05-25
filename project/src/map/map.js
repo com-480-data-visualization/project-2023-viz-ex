@@ -16,9 +16,9 @@ export const initMap = (mapId) => {
       maxZoom: 10,
     }).addTo(map);
     
-    // SVG Layer
-    var svgLayer = new L.SVG({pane:'markerPane'})
-    svgLayer.addTo(map);
+    // // SVG Layer
+    // var svgLayer = new L.SVG({pane:'markerPane'})
+    // svgLayer.addTo(map);
   
     return map;
 }
