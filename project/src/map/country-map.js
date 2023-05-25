@@ -12,11 +12,18 @@ export const initCountryEarthQuakeMap = (mapId) => {
 export const addDataToCountryMap = (map, data) => {
     let legendHandler = initLegend(map);
     let layerGroup = new L.LayerGroup();
-    let choroplethSource = initChoroplethMap(map, layerGroup, (props) => {
-        let country = props.ADMIN;
-        let countryData = filterDataPerCountry(country, data);
-        legendHandler.open(countryData, country);
-    });
+    let choroplethSource = initChoroplethMap(
+        map,
+        layerGroup, 
+        (props) => {
+            let country = props.ADMIN;
+            let countryData = filterDataPerCountry(country, data);
+            legendHandler.open(countryData, country);
+        },
+        () => {
+            legendHandler.close();
+        },
+    );
     addChoroplethMap(map, layerGroup, choroplethSource);
 }
 
@@ -53,7 +60,7 @@ const highlightFeature = (layer) => {
     layer.bringToFront();
 };
 
-const initChoroplethMap = (map, layerGroup, onCountryClick) => {
+const initChoroplethMap = (map, layerGroup, onCountryClick, onOutsideClick) => {
     json("/data/countries.geojson").then(function (data) {
         var clickedFeature = undefined;
         
@@ -93,6 +100,7 @@ const initChoroplethMap = (map, layerGroup, onCountryClick) => {
             
             geojsonLayer.resetStyle(clickedFeature);
             clickedFeature = undefined;
+            onOutsideClick();
         })
         layerGroup.addLayer(geojsonLayer);
     });
