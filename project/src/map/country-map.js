@@ -22,6 +22,7 @@ export const addDataToCountryMap = (map, data) => {
 
 // Choropleth feature
 const style = (feature) => {
+    // TODO change scale
     function getColor(d) {
       return d > 3000 ? "#5C415D" : 
             d > 2500 ? "#e575bc" :
