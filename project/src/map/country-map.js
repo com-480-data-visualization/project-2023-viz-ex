@@ -61,7 +61,7 @@ const highlightFeature = (layer) => {
 };
 
 const initChoroplethMap = (map, layerGroup, onCountryClick, onOutsideClick) => {
-    json("/data/countries.geojson").then(function (data) {
+    json("./data/countries.geojson").then(function (data) {
         var clickedFeature = undefined;
         
         var geojsonLayer = new L.GeoJSON(data, {
