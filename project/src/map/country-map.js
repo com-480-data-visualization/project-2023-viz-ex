@@ -44,7 +44,7 @@ const style = (feature) => {
       fillColor: getColor(feature.properties.Total),
       weight: 2,
       opacity: 1,
-      color: "#4f4f4f",
+      color: "#313639",
       dashArray: "2",
       fillOpacity: 0.9,
     };
@@ -76,6 +76,9 @@ const initChoroplethMap = (map, layerGroup, onCountryClick, onOutsideClick) => {
                         return;
                     }
                     geojsonLayer.resetStyle(layer);
+                    if(clickedFeature !== undefined) {
+                        clickedFeature.bringToFront();
+                    }
                 });
 
                 layer.on("click", function (e) {
