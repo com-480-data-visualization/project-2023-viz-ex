@@ -3,7 +3,8 @@ import { initTimeEarthQuakeMap, addDataToTimeMap, TIME_QUAKES_MAP_ID } from "./m
 import { COUNTRY_EARTHQUAKES_MAP_ID, addDataToCountryMap, initCountryEarthQuakeMap } from "./map/country-map";
  
 const loadData = (afterLoadCallback) => {
-  csv("/data/database.csv").then((data) => {
+  console.log(document.baseURI)
+  csv(`${document.baseURI}data/database.csv`).then((data) => {
     console.log("Data Loaded");
     afterLoadCallback(data);
   });
