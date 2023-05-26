@@ -6,9 +6,6 @@ import {
     extent,
     axisBottom,
     axisLeft,
-    curveBasis,
-    line,
-    timeParse,
 } from 'd3';
 import { MAX_YEAR, MIN_YEAR } from './constants';
 
@@ -32,13 +29,13 @@ const displayData = (yearRecords) => {
     let data = yearRecords.map(({ year, nbQuakes }) => { 
         return { year: new Date(year, 0), nbQuakes: nbQuakes }
     })
+    
+    let maxQuakesCount = Math.max(...data.map(({year, nbQuakes}) => nbQuakes), 1)
 
     let x = scaleTime()
         .domain(extent(data, d => d.year))
         .range([ 0, width ]);
 
-    
-    
     svg.append("g")
         .attr("transform", "translate(0," + height + ")")
         .call(axisBottom(x));
@@ -51,11 +48,14 @@ const displayData = (yearRecords) => {
         .text("Year");
 
     let y = scaleLinear()
-        .domain(extent(data, d => d.nbQuakes))
+        .domain([0, maxQuakesCount])
         .range([ height, 0 ])
 
+    let nTicks = Math.min(maxQuakesCount, 15)
     svg.append("g")
-        .call(axisLeft(y));
+        .call(
+            axisLeft(y).ticks(nTicks)
+        );
 
     svg.append("text")
         .attr("class", "y label")
@@ -64,30 +64,16 @@ const displayData = (yearRecords) => {
         .attr("x", -height/5)
         .attr("dy", ".75em")
         .attr("transform", "rotate(-90)")
-        .text("Number of Earth Quakes");
-
-    svg.append("path")
-        .datum(data)
-        .attr("fill", "none")
-        .attr("stroke", "black")
-        .attr("stroke-width", 1.5)
-        .attr("d", line()
-            .x(function(d) { return x(d.year) })
-            .y(function(d) { return y(d.nbQuakes) })
-        )
+        .text("Number of Earthquakes");
     
-    svg
-        .append("g")
-        .selectAll("dot")
+    svg.selectAll("mybar")
         .data(data)
         .enter()
-        .append("circle")
-          .attr("class", "myCircle")
-          .attr("cx", function(d) { return x(d.year) } )
-          .attr("cy", function(d) { return y(d.nbQuakes) } )
-          .attr("r", 1.5)
-          .attr("stroke", "steelblue")
-          .attr("stroke-width", 3)
+        .append("rect")
+          .attr("x", function(d) { return x(d.year); })
+          .attr("y", function(d) { return y(d.nbQuakes); })
+          .attr("width", 5)
+          .attr("height", function(d) { return height - y(d.nbQuakes); })
           .attr("fill", "steelblue")
 }
 
