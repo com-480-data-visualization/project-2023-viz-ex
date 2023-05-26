@@ -76,6 +76,9 @@ const initChoroplethMap = (map, layerGroup, onCountryClick, onOutsideClick) => {
                         return;
                     }
                     geojsonLayer.resetStyle(layer);
+                    if(clickedFeature !== undefined) {
+                        clickedFeature.bringToFront();
+                    }
                 });
 
                 layer.on("click", function (e) {
