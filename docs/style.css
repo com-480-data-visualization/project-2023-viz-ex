@@ -16,12 +16,12 @@ to
 /*
 Make the document fill the whole viewport, this overrides any weird defaults that browsers might have.
 */
-/* html, body, figure {
+html, body, figure {
 	width: 100%;
 	padding: 0;
 	margin: 0;
 	border: 0;
-} */
+}
 
 /* Default font and size */
 body {
@@ -38,6 +38,11 @@ body {
 	/* background behind the plot */
 	/*background: rgb(40, 40, 40);*/
 	background: white;
+    background: rgba(39, 34, 34, 0.8);
+    /* background-image:url("https://media.geeksforgeeks.org/wp-content/uploads/geeks-25.png"); */
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
 
 	/* default text */
 	font-family: sans-serif;
