@@ -101,25 +101,38 @@ export const filterDataByYear = (map, svgLayer, data, year) => {
             lat: parseFloat(record.Latitude),
             long: parseFloat(record.Longitude),
             mag: parseFloat(record.Magnitude),
+            country: record.Country,
+            date: record.Date,
+            depth: parseFloat(record.Depth)
           };
         });
     initD3MapLayer(map, svgLayer, latLongs);
 }
 
-var mouseover = function(d, map) {
+const mouseover = function(d, map) {
   var elem = d.srcElement.__data__
   var icon = L.divIcon({className: 'my-div-icon'}); // TODO: change style
   let tooltipMarker = new L.Marker([elem.lat, elem.long],{icon:icon});
   map.addLayer(tooltipMarker);
   var popup = L.popup()
-    .setContent(`Magnitude: ${elem.mag}`); //TODO: add content HTML elements
+    .setContent(getPopupContent(elem.country, elem.mag, elem.date));
 
   tooltipMarker.bindPopup(popup);
   tooltipMarker.openPopup();
   return tooltipMarker;
 }
 
-var mouseleave = function(tooltipMarker, map) {
+const mouseleave = function(tooltipMarker, map) {
   if (tooltipMarker != '')
       map.removeLayer(tooltipMarker);
+}
+
+const getPopupContent = (country, magnitude, date) => {
+  return `
+      <div class="legend">
+          <h1>${country}</h1>
+          <h3>Magnitude of ${magnitude}</h3>
+          <h3>${date}</h3>
+      </div>
+  `
 }
