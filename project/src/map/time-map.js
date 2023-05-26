@@ -1,3 +1,4 @@
+import { svg } from "d3";
 import { initMap } from "./map";
 import { select } from "d3-selection";
 
@@ -33,6 +34,8 @@ export const addDataToTimeMap = (map, data) => {
 }
 
 const initD3MapLayer = (map, svgLayer, earthquakes) => {
+    var tooltip = '';
+
     // Select the svg area and add circles:
     let maxZoom = map.getMaxZoom();
     let minRadius = (zoom) => {
@@ -63,8 +66,15 @@ const initD3MapLayer = (map, svgLayer, earthquakes) => {
       .style("fill", "steelblue")
       .attr("stroke", "steelblue")
       .attr("stroke-width", 3)
-      .attr("fill-opacity", 0.4);
-   
+      .attr("fill-opacity", 0.4)
+      .style("pointer-events","visible")
+      .on("mouseover",(d) => {
+        tooltip = mouseover(d, map)
+      })
+      .on("mouseleave", () => {
+        mouseleave(tooltip, map)
+      });
+
     // Function that update circle position if something change
     function update(svg) {
       svg.selectAll("circle")
@@ -94,4 +104,22 @@ export const filterDataByYear = (map, svgLayer, data, year) => {
           };
         });
     initD3MapLayer(map, svgLayer, latLongs);
+}
+
+var mouseover = function(d, map) {
+  var elem = d.srcElement.__data__
+  var icon = L.divIcon({className: 'my-div-icon'}); // TODO: change style
+  let tooltipMarker = new L.Marker([elem.lat, elem.long],{icon:icon});
+  map.addLayer(tooltipMarker);
+  var popup = L.popup()
+    .setContent(`Magnitude: ${elem.mag}`); //TODO: add content HTML elements
+
+  tooltipMarker.bindPopup(popup);
+  tooltipMarker.openPopup();
+  return tooltipMarker;
+}
+
+var mouseleave = function(tooltipMarker, map) {
+  if (tooltipMarker != '')
+      map.removeLayer(tooltipMarker);
 }
