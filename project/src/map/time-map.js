@@ -1,6 +1,7 @@
 import { svg } from "d3";
 import { initMap } from "./map";
 import { select } from "d3-selection";
+import DataDrivenRangeSlider from "data-driven-range-slider";
 
 export const TIME_QUAKES_MAP_ID = "time-map";
 
@@ -15,22 +16,41 @@ export const initTimeEarthQuakeMap = (mapId) => {
 
 export const addDataToTimeMap = (map, data) => {
     console.log('bind data time map', map)
+    let slider = initSlider(data);
     var svg = select(map.getPanes().markerPane).select("svg");
     
     const yearSlider = document.getElementById("myRange");
     const year = document.getElementById("year");
-    year.innerText = yearSlider.value;
+    // year.innerText = yearSlider.value;
     
-    filterDataByYear(map, svg, data, yearSlider.value);
+    filterDataByYear(map, svg, data, 1995);
 
-    yearSlider.oninput = () => {
-        year.innerText = yearSlider.value;
-    }
+    // yearSlider.oninput = () => {
+    //     year.innerText = yearSlider.value;
+    // }
 
-    yearSlider.onchange = () => {
-        svg.selectAll("circle").remove();
-        filterDataByYear(map, svg, data, yearSlider.value);
-    };
+    // yearSlider.onchange = () => {
+    //     svg.selectAll("circle").remove();
+    //     filterDataByYear(map, svg, data, yearSlider.value);
+    // };
+}
+
+const initSlider = (data) => {
+    console.log(data)
+    console.log(DataDrivenRangeSlider)
+    let sliderContainer = document.getElementById('rangeSlider')
+    let rangeSlider = new DataDrivenRangeSlider();
+    rangeSlider
+        .container(sliderContainer)
+        .data(data)
+        .accessor(d => new Date(d.Date))
+        .onBrush(d => {
+            console.log(d)
+        })
+        .svgWidth(800)
+        .svgHeight(100)
+        .render()
+    return rangeSlider;
 }
 
 const initD3MapLayer = (map, svgLayer, earthquakes) => {
@@ -49,27 +69,27 @@ const initD3MapLayer = (map, svgLayer, earthquakes) => {
       return ((d.mag - 5.5) / (10 - 5.5)) * (max - min) + min;
     }
     svgLayer.selectAll("circle")
-      .data(earthquakes)
-      .enter()
-      .append("circle")
-      .attr("cx", function (d) {
-        return map.latLngToLayerPoint([d.lat, d.long]).x;
-      })
-      .attr("cy", function (d) {
-        return map.latLngToLayerPoint([d.lat, d.long]).y;
-      })
-      .attr("r", function (d) {
-        return updateRadius(map.getZoom(), d);
-      })
-      .style("fill", "steelblue")
-      .attr("stroke", "steelblue")
-      .attr("stroke-width", 3)
-      .attr("fill-opacity", 0.4)
-      .style("pointer-events","visible")
-      .on("click",(d) => {
-        openPopup(d, map)
-        L.DomEvent.stopPropagation(d);
-      })
+        .data(earthquakes)
+        .enter()
+        .append("circle")
+        .attr("cx", function (d) {
+            return map.latLngToLayerPoint([d.lat, d.long]).x;
+        })
+        .attr("cy", function (d) {
+            return map.latLngToLayerPoint([d.lat, d.long]).y;
+        })
+        .attr("r", function (d) {
+            return updateRadius(map.getZoom(), d);
+        })
+        .style("fill", "steelblue")
+        .attr("stroke", "steelblue")
+        .attr("stroke-width", 3)
+        .attr("fill-opacity", 0.4)
+        .style("pointer-events","visible")
+        .on("click",(d) => {
+            openPopup(d, map)
+            L.DomEvent.stopPropagation(d);
+        })
 
     // Function that update circle position if something change
     function update(svg) {
