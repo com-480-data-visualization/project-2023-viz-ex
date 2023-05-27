@@ -44,7 +44,7 @@ const style = (feature) => {
       fillColor: getColor(feature.properties.Total),
       weight: 2,
       opacity: 1,
-      color: "#4f4f4f",
+      color: "#313639",
       dashArray: "2",
       fillOpacity: 0.9,
     };

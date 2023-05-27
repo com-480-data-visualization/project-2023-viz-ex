@@ -4,7 +4,6 @@ import { COUNTRY_EARTHQUAKES_MAP_ID, addDataToCountryMap, initCountryEarthQuakeM
 import { globe } from "./background-globe.js";
 
 const loadData = (afterLoadCallback) => {
-  console.log(document.baseURI)
   csv(`${document.baseURI}data/database.csv`).then((data) => {
     console.log("Data Loaded");
     afterLoadCallback(data);
