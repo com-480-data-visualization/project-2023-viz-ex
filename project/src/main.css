@@ -31,12 +31,10 @@
 }
 
 #globeViz {
-	width: 10%;
-	height: 10vh;
-	max-height: 15vw;
     display: block;
-    position: fixed;
-    top: 0;
-    left: 0;
+    position: absolute;
+    top: -8%;
+    left: 74%;
+    overflow:hidden;
     z-index: -9999;
 }
