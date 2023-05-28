@@ -15,27 +15,10 @@ export const initTimeEarthQuakeMap = (mapId) => {
 }
 
 export const addDataToTimeMap = (map, data) => {
-    console.log('bind data time map', map)
-    
     var svg = select(map.getPanes().markerPane).select("svg");
     initSlider(data, (data) => {
-        // svg.selectAll("circle").remove();
         displayData(map, svg, data)
     });
-    // const yearSlider = document.getElementById("myRange");
-    // const year = document.getElementById("year");
-    // year.innerText = yearSlider.value;
-    
-    // filterDataByYear(map, svg, data, 1995);
-
-    // yearSlider.oninput = () => {
-    //     year.innerText = yearSlider.value;
-    // }
-
-    // yearSlider.onchange = () => {
-    //     svg.selectAll("circle").remove();
-    //     filterDataByYear(map, svg, data, yearSlider.value);
-    // };
 }
 
 const initSlider = (data, onSliderChange) => {
@@ -46,7 +29,6 @@ const initSlider = (data, onSliderChange) => {
         .data(data)
         .accessor(d => new Date(d.Date))
         .onBrush(d => {
-            console.log('on brush')
             onSliderChange(d.data)
         })
         .svgWidth(800)
@@ -100,7 +82,6 @@ const initD3MapLayer = (map, svgLayer, earthquakes) => {
 
     // Function that update circle position if something change
     function update(svg) {
-        console.log("update")
         svg.selectAll("circle")
             .attr("cx", function (d) {
                 return map.latLngToLayerPoint([d.lat, d.long]).x;
@@ -153,7 +134,6 @@ export const filterDataByYear = (map, svgLayer, data, year) => {
 }
 
 const openPopup = function(d, map) {
-    // console.log(d)
     var elem = d
     var icon = L.divIcon({className: 'my-div-icon'}); // TODO: change style
     let tooltipMarker = new L.Marker([elem.lat, elem.long],{icon:icon});
