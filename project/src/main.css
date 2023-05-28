@@ -32,9 +32,9 @@
 
 #globeViz {
     display: block;
-    position: absolute;
-    top: -8%;
-    left: 74%;
+    position: fixed;
+    top: -5%;
+    left: 82%;
     overflow:hidden;
     z-index: -9999;
 }
