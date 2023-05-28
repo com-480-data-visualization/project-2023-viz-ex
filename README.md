@@ -2,9 +2,9 @@
 
 | Student's name | SCIPER |
 | -------------- | ------ |
-|An Bui Duc Khanh | |
-|Julie-Anne Jaeggi | |
-|Olivier Saint-Cyr | |
+|An Bui Duc Khanh |355814|
+|Julie-Anne Jaeggi |366959|
+|Olivier Saint-Cyr |366876|
 
 [Milestone 1](https://github.com/com-480-data-visualization/project-2023-viz-ex/tree/master/ms1) • [Milestone 2](#milestone-2) • [Milestone 3](#milestone-3)
 
