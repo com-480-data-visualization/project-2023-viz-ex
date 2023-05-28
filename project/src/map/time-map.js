@@ -17,6 +17,7 @@ export const initTimeEarthQuakeMap = (mapId) => {
 export const addDataToTimeMap = (map, data) => {
     var svg = select(map.getPanes().markerPane).select("svg");
     initSlider(data, (data) => {
+        // svg.selectAll("circle").remove()
         displayData(map, svg, data)
     });
 }
@@ -24,6 +25,15 @@ export const addDataToTimeMap = (map, data) => {
 const initSlider = (data, onSliderChange) => {
     let sliderContainer = document.getElementById('rangeSlider')
     let rangeSlider = new DataDrivenRangeSlider();
+
+    const getWidth = () => {
+        return sliderContainer.parentElement.offsetWidth
+    }
+
+    const getHeight = () => {
+        return sliderContainer.parentElement.offsetHeight
+    }
+
     rangeSlider
         .container(sliderContainer)
         .data(data)
@@ -31,9 +41,17 @@ const initSlider = (data, onSliderChange) => {
         .onBrush(d => {
             onSliderChange(d.data)
         })
-        .svgWidth(800)
-        .svgHeight(100)
+        .svgWidth(getWidth())
+        .svgHeight(getHeight())
         .render()
+
+    addEventListener("resize", (event) => {
+        rangeSlider
+            .svgWidth(getWidth())
+            .svgHeight(getHeight())
+            .render()
+    });
+    
     return rangeSlider;
 }
 
