@@ -1,4 +1,5 @@
-const TILE_LAYER_URL = "https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png";
+// const TILE_LAYER_URL = "https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png";
+const TILE_LAYER_URL = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
 
 export const initMap = (mapId) => {
     let map = L.map(mapId)
@@ -12,9 +13,9 @@ export const initMap = (mapId) => {
     L.tileLayer(TILE_LAYER_URL, {
       attribution:
         'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a>',
+      className: 'map-tiles',
       maxZoom: 10,
       minZoom: 2,
     }).addTo(map);
-  
     return map;
 }

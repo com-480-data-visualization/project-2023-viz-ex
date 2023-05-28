@@ -1,6 +1,6 @@
 import { initMap } from "./map";
 import { initLegend, filterDataPerCountry } from "../legend";
-import { json } from "d3";
+import { json, scaleLinear, legendColor } from "d3";
 
 export const COUNTRY_EARTHQUAKES_MAP_ID = "country-map"
 
@@ -11,6 +11,7 @@ export const initCountryEarthQuakeMap = (mapId) => {
 
 export const addDataToCountryMap = (map, data) => {
     let legendHandler = initLegend(map);
+    initMapLegend(map);
     let layerGroup = new L.LayerGroup();
     let choroplethSource = initChoroplethMap(
         map,
@@ -29,17 +30,6 @@ export const addDataToCountryMap = (map, data) => {
 
 // Choropleth feature
 const style = (feature) => {
-    // TODO change scale
-    function getColor(d) {
-      return d > 3000 ? "#5C415D" : 
-            d > 2500 ? "#e575bc" :
-            d > 2000 ? "#8bf9b9" : 
-            d > 1500 ? "#76f5fc" : 
-            d > 1000 ? "#f77059" :
-            d > 500 ? "#FEB24C" :
-            d > 100 ? "#64db57" :
-            "#b076fc";
-    }
     return {
       fillColor: getColor(feature.properties.Total),
       weight: 2,
@@ -85,7 +75,6 @@ const initChoroplethMap = (map, layerGroup, onCountryClick, onOutsideClick) => {
                     if (clickedFeature !== layer) {
                         geojsonLayer.resetStyle(clickedFeature);
                     }
-
                     onCountryClick(feature.properties);
                     
                     map.fitBounds(e.target.getBounds());
@@ -111,4 +100,38 @@ const initChoroplethMap = (map, layerGroup, onCountryClick, onOutsideClick) => {
 
 const addChoroplethMap = (layerGroup, choroplethMapSource)=>{
     layerGroup.addLayer(choroplethMapSource);
+}
+
+const initMapLegend = (map)=> {
+    var legend = L.control({position: 'bottomright'});
+    legend.onAdd = function () {
+        var div = L.DomUtil.create('div', 'info legend');
+        var labels = ['<strong>Total number of earthquakes recorded</strong>'];
+        var categories = [1000, 500, 200, 100, 50, 20, 10, 0];
+
+        for (var i = 0; i < categories.length; i++) {
+                div.innerHTML += 
+                labels.push(
+                    '<div class=legendColor>'+
+                    '<div id="circle" style="background:' + getColor(categories[i]) + '"></div>' 
+                    +'<div id=color-legend-values>' + ' > ' + categories[i].toString() +
+                    '</div></div>'
+                );
+
+            }
+        div.innerHTML = labels.join('');
+        return div;
+    };
+    legend.addTo(map);
+}
+
+const getColor = (d) => {
+    return d >= 1000 ? '#6890b5' :
+           d >= 500  ? '#4a5b78' :
+           d >= 200  ? '#627ad5' :
+           d >= 100  ? '#5e4dcd' :
+           d >= 50   ? '#7a5d9b' :
+           d >= 20   ? '#a93fd9' :
+           d >= 10   ? '#2bc4d3' :
+                      '#afb2b2';              
 }
