@@ -1,7 +1,7 @@
 import { csv } from "d3";
 import { initTimeEarthQuakeMap, addDataToTimeMap, TIME_QUAKES_MAP_ID } from "./map/time-map";
 import { COUNTRY_EARTHQUAKES_MAP_ID, addDataToCountryMap, initCountryEarthQuakeMap } from "./map/country-map";
-import { globe } from "./background-globe.js";
+import { initWorld } from "./background-globe.js";
 
 const loadData = (afterLoadCallback) => {
   csv(`${document.baseURI}data/database.csv`).then((data) => {
