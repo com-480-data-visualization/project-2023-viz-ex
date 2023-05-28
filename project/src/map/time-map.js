@@ -74,6 +74,11 @@ const initD3MapLayer = (map, svgLayer, earthquakes) => {
     let circles = svgLayer.selectAll("circle")
         .data(earthquakes);
     
+    circles.exit()
+        .transition()
+        .attr('r', 0)
+        .remove()
+
     circles
         .enter()
         .append("circle")
@@ -92,11 +97,13 @@ const initD3MapLayer = (map, svgLayer, earthquakes) => {
         .attr("fill-opacity", 0.4)
         .style("pointer-events","visible")
         .on("click",(d) => {
-            openPopup(d, map)
+            openPopup(d, map);
             L.DomEvent.stopPropagation(d);
         })
-
-    circles.exit().remove()
+        .merge(circles) // merge enter and update selections
+        .attr("r", function (d) {
+            return updateRadius(map.getZoom(), d);
+        });
 
     // Function that update circle position if something change
     function update(svg) {
