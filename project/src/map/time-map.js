@@ -55,6 +55,8 @@ const initSlider = (data, onSliderChange) => {
     return rangeSlider;
 }
 
+var isD3LayerInit = false;
+
 const initD3MapLayer = (map, svgLayer, earthquakes) => {
     let maxZoom = map.getMaxZoom();
     let minRadius = (zoom) => {
@@ -110,13 +112,13 @@ const initD3MapLayer = (map, svgLayer, earthquakes) => {
                 return updateRadius(map.getZoom(), d);
             });
     }
-
-    map.off("moveend")
-
-    // If the user change the map (zoom or drag), I update circle position:
-    map.on("moveend", () => {
-        update(svgLayer)
-    });
+    if (!isD3LayerInit) {
+        // If the user change the map (zoom or drag), I update circle position:
+        map.on("moveend", () => {
+            update(svgLayer)
+        });
+    }
+    isD3LayerInit = true;
 };
 
 export const displayData = (map, svgLayer, data) => {
