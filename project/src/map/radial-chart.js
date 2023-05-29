@@ -15,19 +15,34 @@ export const initRadialChart = (rawData)=> {
         .attr("stroke-linejoin", "round")
         .attr("stroke-linecap", "round");
 
+    console.log(rawData);
     const line = d3.lineRadial()
     .curve(d3.curveLinearClosed)
-    .angle(d => x(d.mean)) // TODO: check
+    .angle(d => x(d.date))
 
     const area = d3.areaRadial()
         .curve(d3.curveLinearClosed)
-        .angle(d => x(d.mean))
+        .angle(d => x(d.date))
 
-    const data = Array.from(rawData);
+    const data = Array.from(rollup(
+            rawData, 
+            v => ({
+              date: new Date(Date.UTC(2000, v[0].DATE.split("-")[1], v[0].DATE.split("-")[2])),
+              avg: d3.mean(v, d => d.TAVG || NaN),
+              min: d3.mean(v, d => d.TMIN || NaN),
+              max: d3.mean(v, d => d.TMAX || NaN),
+              minmin: d3.min(v, d => d.TMIN || NaN),
+              maxmax: d3.max(v, d => d.TMAX || NaN)
+            }), 
+            d =>`${d.DATE.split("-")[1]}-${d.DATE.split("-")[2]}`
+            
+          ).values())
+            .sort((a, b) => ascending(a.date, b.date))
+
     console.log(data)
     // TODO: MAGNITUDE SCALE
-    const x = d3.scale() // TODO: check
-        .domain([0,160])
+    const x = d3.scaleUtc()
+        .domain([Date.UTC(2000, 0, 1), Date.UTC(2001, 0, 1) - 1])
         .range([0, 2 * Math.PI])
 
     const y =  d3.scaleLinear()
@@ -110,7 +125,7 @@ export const initRadialChart = (rawData)=> {
         .attr("fill", "none")
         .attr("stroke", "steelblue")
         .attr("stroke-width", 1.5)
-        .attr("d", line.radius(d => y(d.mean))(data));
+        .attr("d", line.radius(d => y(d.avg))(data));
   
     svg.append("g")
         .call(g=>xAxis(g));
@@ -120,8 +135,3 @@ export const initRadialChart = (rawData)=> {
 
     document.querySelector("#radial-chart").append(svg.node());
 }
-
-const onlyUnique = (value, index, array) => {
-    return array.indexOf(value) === index;
-}
-  

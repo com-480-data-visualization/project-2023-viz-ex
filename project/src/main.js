@@ -29,7 +29,7 @@ whenDocumentLoaded(() => {
       addDataToCountryMap(countryMap, data);
     });
 
-    loadData(`${document.baseURI}data/earthquake_magnitudes.csv`, (data)=>{
+    loadData(`${document.baseURI}data/database.csv`, (data)=>{
       initRadialChart(data);
     })
   
