@@ -4,6 +4,11 @@
     border-radius: 10px;
 }
 
+#slider-container {
+    height: 10%;
+    width: 80%;
+}
+
 .info {
     padding: 6px 8px;
     font: 14px/16px Arial, Helvetica, sans-serif;
@@ -32,9 +37,9 @@
 
 #globeViz {
     display: block;
-    position: absolute;
-    top: -8%;
-    left: 74%;
+    position: fixed;
+    top: -5%;
+    left: 82%;
     overflow:hidden;
     z-index: -9999;
 }
@@ -53,8 +58,7 @@
 }
 
 #color-legend-values {
-    padding-left: 20%;
-    padding-right: 20%;
+    padding-left: 3%;
 }
 
 :root {

@@ -13,14 +13,13 @@ export const initWorld = () => {
             .polygonSideColor(() => 'rgba(0,0,0,0)');
     });
     
-    let globeContainer = document.querySelector('#globeViz');
-    let width = globeContainer.clientWidth;
-    let height = globeContainer.clientHeight;
-    world.width([width]);
-    world.height([height]);
-    
+    let size = window.innerWidth/5;
+    world.width([size]);
+    world.height([size]);
+
     world.controls().autoRotate = true;
     world.controls().autoRotateSpeed = 1.0;
+    return world;
 }
 
 

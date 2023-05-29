@@ -27,6 +27,13 @@ whenDocumentLoaded(() => {
       addDataToTimeMap(timeMap, data);
       addDataToCountryMap(countryMap, data);
     });
+  
+    window.addEventListener('resize', (event) => {
+      let newSize = event.target.innerWidth/5;
+      globe.width([newSize]);
+      globe.height([newSize]);
+    });
+
     window.isScriptLoaded = true;
   }
 });
