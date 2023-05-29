@@ -35,13 +35,20 @@
     scroll-snap-type: y mandatory;
 }
 
+.page-title {
+    color:white;
+    font-size: x-large;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
 #globeViz {
     display: block;
     position: fixed;
     top: -5%;
     left: 82%;
     overflow:hidden;
-    z-index: -9999;
+    z-index: -9000;
 }
 
 #circle {
@@ -67,4 +74,32 @@
 
 .map-tiles {
     filter:var(--map-tiles-filter, none);
+}
+
+.header {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100vh;
+    scroll-snap-align: start;
+    position: relative;
+    align-items: center;
+}
+
+#header-title {
+    margin-top: 5%;
+    margin-left: 2%;
+    color:rgb(255, 255, 255);
+    font-size: xx-large;
+    font-weight: bold;
+}
+
+#header-container {
+    /* background-image: url(https://earth3dmap.com/wp-content/uploads/2018/08/earthquake-indonesia-java-sea.jpg); */
+    background-image: url(https://earth.stanford.edu/sites/default/files/media/image/2021-06/Foreshock.jpg);
+    background-repeat: no-repeat;
+    background-size: 100%;
+    height: 100%;
+    width: 100%;
+    z-index: -9999;
 }
