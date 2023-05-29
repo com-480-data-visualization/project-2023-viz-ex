@@ -15,8 +15,7 @@ export const initRadialChart = (rawData)=> {
         .attr("stroke-linejoin", "round")
         .attr("stroke-linecap", "round");
 
-    // let data = getData(rawData);
-    // console.log(data);
+    console.log(rawData);
     const line = d3.lineRadial()
     .curve(d3.curveLinearClosed)
     .angle(d => x(d.date))
@@ -39,6 +38,7 @@ export const initRadialChart = (rawData)=> {
             
           ).values())
             .sort((a, b) => ascending(a.date, b.date))
+
     console.log(data)
     // TODO: MAGNITUDE SCALE
     const x = d3.scaleUtc()
@@ -133,6 +133,5 @@ export const initRadialChart = (rawData)=> {
     svg.append("g")
         .call(g=>yAxis(g));
 
-    return svg.node();
+    document.querySelector("#radial-chart").append(svg.node());
 }
-    

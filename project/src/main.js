@@ -4,8 +4,8 @@ import { COUNTRY_EARTHQUAKES_MAP_ID, addDataToCountryMap, initCountryEarthQuakeM
 import { initWorld } from "./background-globe.js";
 import { initRadialChart } from "./map/radial-chart";
 
-const loadData = (afterLoadCallback) => {
-  csv(`${document.baseURI}data/database.csv`).then((data) => {
+const loadData = (url, afterLoadCallback) => {
+  csv(url).then((data) => {
     console.log("Data Loaded"); 
     afterLoadCallback(data);
   });
@@ -21,19 +21,17 @@ const whenDocumentLoaded = (action) => {
 
 whenDocumentLoaded(() => {
   if (!window.isScriptLoaded) {
-    csv(`${document.baseURI}data/sfo-temperature.csv`).then((data) => {
-      document.querySelector("#radial-chart").append(
-      initRadialChart(data));
-    })
-
-
     let globe = initWorld();
     let timeMap = initTimeEarthQuakeMap(TIME_QUAKES_MAP_ID);
     let countryMap = initCountryEarthQuakeMap(COUNTRY_EARTHQUAKES_MAP_ID);
-    loadData((data) => {
+    loadData(`${document.baseURI}data/database.csv`, (data) => {
       addDataToTimeMap(timeMap, data);
       addDataToCountryMap(countryMap, data);
     });
+
+    loadData(`${document.baseURI}data/database.csv`, (data)=>{
+      initRadialChart(data);
+    })
   
     window.addEventListener('resize', (event) => {
       let newSize = event.target.innerWidth/5;
