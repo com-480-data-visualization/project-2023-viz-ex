@@ -1,6 +1,18 @@
 import * as d3 from "d3";
 
-export const initDensity=()=>{
+export const initDensity=()=> {
+    const yearSlider = document.querySelector("input");
+      const year = document.getElementById("year")
+      year.innerText = yearSlider.value
+  
+      yearSlider.oninput = () => {
+        year.innerText = yearSlider.value
+      }
+ 
+      yearSlider.onchange = () => {
+            // TODO: redraw
+      }
+    
     // set the dimensions and margins of the graph
     const margin = {top: 60, right: 30, bottom: 20, left:110},
         width = 560 - margin.left - margin.right,
@@ -15,17 +27,17 @@ export const initDensity=()=>{
         .attr("transform",
             `translate(${margin.left}, ${margin.top})`);
     
-    //read data
-    d3.csv("https://raw.githubusercontent.com/zonination/perceptions/master/probly.csv")
-    .then(function(data) {
-
+    d3.json("./data/earthquake_magnitudes.json").then(function(data) {
         // Get the different categories and count them
-        const categories = data.columns
+        const year = 1965;
+        const filterData = data[year]
+
+        const categories = Object.keys(filterData)
         const n = categories.length
 
         // Add X axis
         const x = d3.scaleLinear()
-            .domain([-10, 140]) // TODO: change to magnitude
+            .domain([4, 9.5])
             .range([ 0, width ]);
         svg.append("g")
             .attr("transform", `translate(0, ${height})`)
@@ -33,7 +45,7 @@ export const initDensity=()=>{
 
         // Create a Y scale for densities
         const y = d3.scaleLinear()
-            .domain([0, 0.4])
+            .domain([0, 10])
             .range([ height, 0]);
 
         // Create the Y axis for names
@@ -45,14 +57,13 @@ export const initDensity=()=>{
             .call(d3.axisLeft(yName));
 
         // Compute kernel density estimation for each column:
-        const kde = kernelDensityEstimator(kernelEpanechnikov(7), x.ticks(40)) // increase this 40 for more accurate density.
+        const kde = kernelDensityEstimator(kernelEpanechnikov(0.5), x.ticks(20)) // increase this 40 for more accurate density.
         const allDensity = []
         for (let i = 0; i < n; i++) {
             let key = categories[i]
-            let density = kde( data.map(function(d){  return d[key]; }) )
+            let density = kde( data[year][key] )
             allDensity.push({key: key, density: density})
         }
-
         // Add areas
         svg.selectAll("areas")
             .data(allDensity)
@@ -67,7 +78,6 @@ export const initDensity=()=>{
                 .x(function(d) { return x(d[0]); })
                 .y(function(d) { return y(d[1]); })
             )
-
     })
 }
 
