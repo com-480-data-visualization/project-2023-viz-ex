@@ -14,61 +14,43 @@ export const initDensity=()=> {
         const year = document.getElementById("year")
         year.innerText = yearSlider.value
 
+        let yearData = data[yearSlider.value];
+        let countries = new Set(Object.keys(yearData).slice(0, 10));
+        let filteredYearData = {}
+        for (const country of countries) {
+            if (countries.has(country)) {
+                filteredYearData[country] = yearData[country]
+            }
+        }
 
-        var filterData = data[yearSlider.value];
-        console.log(filterData)
-        var categories = Object.keys(filterData).slice(0,10);
-        console.log(categories)
-        // var allDensity;
-        var yName;
-        
-       updateDensityPlot(data);
+        const svg = d3.select("#density-plot")
+            .append("svg")
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+                .attr("transform",
+                    `translate(${margin.left}, ${margin.top})`);
+
+        initAxis(filteredYearData, svg);
+        updateDensityPlot(filteredYearData, svg);
 
         yearSlider.oninput = () => {
                 year.innerText = yearSlider.value
-                filterData = data[yearSlider.value];
-                categories = Object.keys(filterData).slice(0,10);
-                allDensity = getDensities(filterData, categories, kde, yearSlider.value);
-                svg.selectAll("path")
-                    .transition()
-                    .attr("d",  d3.line()
-                        .curve(d3.curveBasis)
-                        .x(function(d) { return x(d[0]); })
-                        .y(function(d) { return y(0); })
-                    )
-                .remove()
-                svg.append("g")
-                    .call(d3.axisLeft(yName));
-                let areas = svg.selectAll("areas").data(allDensity)
-                areas
-                    .enter()
-                    .append("path")
-                    .attr("transform", function(d){
-                        return(`translate(0, ${(getYName(d.key, categories)-height)})`)
-                    })
-                    .datum(function(d){return(d.density)})
-                    .attr("fill", "#69b3a2")
-                    .attr("stroke", "#000")
-                    .attr("stroke-width", 1)
-                    .attr("d",  d3.line()
-                        .curve(d3.curveBasis)
-                        .x(function(d) { return x(d[0]); })
-                        .y(function(d) { return y(d[1]); })
-                    )
+                let yearData = data[yearSlider.value];
+                let filteredYearData = {}
+                for (const country of countries) {
+                    if (countries.has(country)) {
+                        filteredYearData[country] = yearData[country]
+                    }
+                }
+
+                updateDensityPlot(filteredYearData, svg)
             }
     });        
 }
 
-const updateDensityPlot = (data) => {
-    var categories = Object.keys(data).slice(0, 10);
-    // append the svg object to the body of the page
-    const svg = d3.select("#density-plot")
-        .append("svg")
-            .attr("width", width + margin.left + margin.right)
-            .attr("height", height + margin.top + margin.bottom)
-        .append("g")
-            .attr("transform",
-                `translate(${margin.left}, ${margin.top})`);
+const initAxis = (data, svg) => {
+    let categories = Object.keys(data);
 
     svg.append("g")
         .attr("transform", `translate(0, ${height})`)
@@ -82,28 +64,29 @@ const updateDensityPlot = (data) => {
 
     svg.append("g")
         .call(d3.axisLeft(yName));
+}
 
-    let allDensity = getDensities(data, categories, kde)
+const updateDensityPlot = (data, svg) => {
+    var categories = Object.keys(data)
+    let allDensity = getDensities(data, categories)
 
-    // updatePath(svg, allDensity, yName)
     let areas = svg.selectAll("areas").data(allDensity)
-    areas.enter()
+    console.log('areas', areas)
+    let v = areas
+        .enter()
         .append("path")
         .attr("transform", function(d){
             return(`translate(0, ${(getYName(d.key, categories)-height)})`)
         })
-        .datum(function(d){return(d.density)})
+        .datum(function(d){ return(d.density) })
         .attr("fill", "#69b3a2")
         .attr("stroke", "#000")
         .attr("stroke-width", 1)
-        // .merge(areas)
         .attr("d",  d3.line()
             .curve(d3.curveBasis)
             .x(function(d) { return x(d[0]); })
             .y(function(d) { return y(d[1]); })
-        )
-
-    areas.exit().remove()
+        );   
 }
 
 // Add X axis
@@ -133,12 +116,12 @@ function kernelEpanechnikov(k) {
     };
 }
 
-function getDensities (filterData, categories) {
+function getDensities(filterData, categories) {
     // Compute kernel density estimation for each column:
     const allDensity = []
-    for (let category in categories) {
+    for (const category of categories) {
         let density = kde(filterData[category])
-        allDensity.push({key: key, density: density})
+        allDensity.push({ key: category, density: density })
     }
     return allDensity;
 }
