@@ -17,13 +17,10 @@ export const initDensity=()=> {
 
     var filterData = data[yearSlider.value];
     console.log(filterData)
-    var categories = Object.keys(filterData);
+    var categories = Object.keys(filterData).slice(0,10);
+    console.log(categories)
     var allDensity;
     var yName;
-
-    yearSlider.oninput = () => {
-        year.innerText = yearSlider.value
-    }
     
     // append the svg object to the body of the page
     const svg = d3.select("#density-plot")
@@ -60,7 +57,7 @@ export const initDensity=()=> {
             .attr("fill", "#69b3a2")
             .attr("stroke", "#000")
             .attr("stroke-width", 1)
-            .merge(areas)
+            // .merge(areas)
             .attr("d",  d3.line()
                 .curve(d3.curveBasis)
                 .x(function(d) { return x(d[0]); })
@@ -68,12 +65,39 @@ export const initDensity=()=> {
             )
         areas.exit().remove()
 
-        yearSlider.onchange = () => {
+        yearSlider.oninput = () => {
+            year.innerText = yearSlider.value
             filterData = data[yearSlider.value];
-            categories = Object.keys(filterData);
+            categories = Object.keys(filterData).slice(0,10);
             allDensity = getDensities(filterData, categories, kde, yearSlider.value);
-            updatePath(areas, allDensity, categories);
-          }
+            svg.selectAll("path")
+                .transition()
+                .attr("d",  d3.line()
+                    .curve(d3.curveBasis)
+                    .x(function(d) { return x(d[0]); })
+                    .y(function(d) { return y(0); })
+                )
+            .remove()
+            svg.append("g")
+                .call(d3.axisLeft(yName));
+            let areas = svg.selectAll("areas").data(allDensity)
+            areas
+                .enter()
+                .append("path")
+                .attr("transform", function(d){
+                    return(`translate(0, ${(getYName(d.key, categories)-height)})`)
+                })
+                .datum(function(d){return(d.density)})
+                .attr("fill", "#69b3a2")
+                .attr("stroke", "#000")
+                .attr("stroke-width", 1)
+                .attr("d",  d3.line()
+                    .curve(d3.curveBasis)
+                    .x(function(d) { return x(d[0]); })
+                    .y(function(d) { return y(d[1]); })
+                )
+            
+        }
     });        
 }
 
@@ -121,26 +145,4 @@ const getYName = (key, categories) => {
         .domain(categories)
         .range([0, height])
         .paddingInner(1)(key)
-}
-
-function updatePath(areas, allDensity, categories) {
-    console.log("CATEGORIES:", categories.length)
-    areas.enter()
-        .append("path")
-        .attr("transform", function(d){return(`translate(0, ${(getYName(d.key, categories)-height)})`)})
-        .datum(function(d){
-            console.log(d.key)
-            console.log(getYName(d.key, categories));
-            return(d.density)
-        })
-        .attr("fill", "#69b3a2")
-        .attr("stroke", "#000")
-        .attr("stroke-width", 1)
-        .merge(areas)
-        .attr("d", d3.line()
-            .curve(d3.curveBasis)
-            .x(function(d) { return x(d[0]); })
-            .y(function(d) { return y(d[1]); })
-        )
-    areas.exit().remove()
 }
