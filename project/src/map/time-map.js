@@ -64,7 +64,6 @@ const initD3MapLayer = (map, svgLayer, earthquakes) => {
     var radiusRange = scaleLinear()
         .domain([5.5, 9.9])
         .range([20, 80])
-    console.log(colorRange)
 
     let maxZoom = map.getMaxZoom();
     function updateRadius(height, d) {
