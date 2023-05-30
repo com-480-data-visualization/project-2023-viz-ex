@@ -1,9 +1,9 @@
 import * as d3 from "d3";
 
  // set the dimensions and margins of the graph
- const margin = {top: 60, right: 30, bottom: 20, left:110},
- width = 560 - margin.left - margin.right,
- height = 500 - margin.top - margin.bottom;
+const margin = {top: 60, right: 30, bottom: 20, left:110},
+width = 560 - margin.left - margin.right,
+height = 500 - margin.top - margin.bottom;
 
 export const initDensity=()=> {
     d3.json("./data/earthquake_magnitudes.json").then(function(_data) {
@@ -31,8 +31,7 @@ export const initDensity=()=> {
                 .attr("transform",
                     `translate(${margin.left}, ${margin.top})`);
 
-        initAxis(filteredYearData, svg);
-        updateDensityPlot(filteredYearData, svg);
+        initDensityPlot(filteredYearData, svg);
 
         yearSlider.oninput = () => {
                 year.innerText = yearSlider.value
@@ -44,12 +43,12 @@ export const initDensity=()=> {
                     }
                 }
 
-                updateDensityPlot(filteredYearData, svg)
+                updateDensityPlot(filteredYearData, svg);
             }
     });        
 }
 
-const initAxis = (data, svg) => {
+const initDensityPlot = (data, svg) => {
     let categories = Object.keys(data);
 
     svg.append("g")
@@ -64,21 +63,17 @@ const initAxis = (data, svg) => {
 
     svg.append("g")
         .call(d3.axisLeft(yName));
-}
 
-const updateDensityPlot = (data, svg) => {
-    var categories = Object.keys(data)
     let allDensity = getDensities(data, categories)
-
     let areas = svg.selectAll("areas").data(allDensity)
-    console.log('areas', areas)
-    let v = areas
+    areas
         .enter()
         .append("path")
         .attr("transform", function(d){
             return(`translate(0, ${(getYName(d.key, categories)-height)})`)
         })
         .datum(function(d){ return(d.density) })
+        .attr("class", "ridge")
         .attr("fill", "#69b3a2")
         .attr("stroke", "#000")
         .attr("stroke-width", 1)
@@ -86,7 +81,28 @@ const updateDensityPlot = (data, svg) => {
             .curve(d3.curveBasis)
             .x(function(d) { return x(d[0]); })
             .y(function(d) { return y(d[1]); })
-        );   
+        );
+}
+
+const updateDensityPlot = (data, svg) => {
+    var categories = Object.keys(data)
+    let allDensity = getDensities(data, categories)
+
+    let areas = svg.selectAll(".ridge")
+    areas
+        .data(allDensity)
+        .merge(areas)
+        .attr("transform", function(d){
+            return(`translate(0, ${(getYName(d.key, categories)-height)})`)
+        })
+        .datum(function(d){ return(d.density) })
+        .transition()
+        .duration(1000)
+        .attr("d",  d3.line()
+            .curve(d3.curveBasis)
+            .x(function(d) { return x(d[0]); })
+            .y(function(d) { return y(d[1]); })
+        );
 }
 
 // Add X axis
