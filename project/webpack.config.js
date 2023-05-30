@@ -21,6 +21,12 @@ module.exports = {
                         return "data/[name][ext]";
                     }
                 },
+                {
+                    from: "src/assets/*",
+                    to({ context, absoluteFilename }) {
+                        return "assets/[name][ext]";
+                    }
+                },
                 { 
                     from: "src/*.css", 
                     to({ context, absoluteFilename }) {
