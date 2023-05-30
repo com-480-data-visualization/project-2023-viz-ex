@@ -38,16 +38,18 @@
 #earthquakes-container {
     display: flex;
     flex-direction: column;
+    justify-content: space-around;
+    height: 75vh;
+    width: 85vw;
 }
 
 .earthquake-info {
     color: white;
     display: flex;
-    align-items: center;
+    align-items: start;
     padding-left: 5%;
 
     .location-description {
-        flex-direction: 3;
         padding-right: 5%;
 
         .description {
@@ -78,15 +80,11 @@
         };
     }
 
-    .img-box {
-        margin-top: 5%;
-        flex-grow: 1;
-        .eq-img {
-            border-radius: 10px;
-            width: 100%;
-        }
+    .eq-img {
+        border-radius: 10px;
+        width: 30%;
+        height: auto;
     }
-    
 }
 
 .info {
