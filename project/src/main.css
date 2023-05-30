@@ -9,6 +9,57 @@
     width: 80%;
 }
 
+#big-earthquake-container {
+    display: flex;
+}
+
+#big-magnitude {
+    display: flex;
+    flex-direction: column;
+    color: white;
+}
+
+#magnitude-value {
+    font-size: 150px;
+    color: inherit;
+    margin-bottom: -20px;
+}
+
+#magnitude {
+    font-size: 37px;
+    color: inherit;
+    padding-left: 7px;
+}
+
+#earthquakes-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.earthquake-info {
+    color: white;
+    .location {
+        .name {
+            font-size: xx-large;
+            color: lightskyblue;
+            margin-bottom: -15px;
+        }
+
+        .country-date {
+
+            font-size: x-large;
+        }
+        display: flex;
+        flex-direction: column;
+    };
+
+    .eq-img {  
+        width:100px;
+        height:100px
+    }  
+
+}
+
 .info {
     padding: 6px 8px;
     font: 14px/16px Arial, Helvetica, sans-serif;
