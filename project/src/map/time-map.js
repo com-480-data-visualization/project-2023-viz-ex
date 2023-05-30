@@ -1,4 +1,4 @@
-import { svg } from "d3";
+import { scaleLinear } from "d3";
 import { initMap } from "./map";
 import { select } from "d3-selection";
 import DataDrivenRangeSlider from "data-driven-range-slider";
@@ -58,19 +58,19 @@ const initSlider = (data, onSliderChange) => {
 var isD3LayerInit = false;
 
 const initD3MapLayer = (map, svgLayer, earthquakes) => {
+    var colorRange = scaleLinear()
+        .domain([5.5, 9.9])
+        .range(["yellow", "red"]);
+    var radiusRange = scaleLinear()
+        .domain([5.5, 9.9])
+        .range([20, 80])
+    console.log(colorRange)
+
     let maxZoom = map.getMaxZoom();
-    let minRadius = (zoom) => {
-      return 2;
-    };
-    let maxRadius = (zoom) => {
-      return 64 * (zoom / maxZoom) + minRadius(zoom);
-    };
-   
     function updateRadius(height, d) {
-      let max = maxRadius(height);
-      let min = minRadius(height);
-      return ((d.mag - 5.5) / (10 - 5.5)) * (max - min) + min;
+      return radiusRange(d.mag) * height/maxZoom;
     }
+
     let circles = svgLayer.selectAll("circle")
         .data(earthquakes);
     
@@ -91,8 +91,12 @@ const initD3MapLayer = (map, svgLayer, earthquakes) => {
         .attr("r", function (d) {
             return updateRadius(map.getZoom(), d);
         })
-        .style("fill", "steelblue")
-        .attr("stroke", "steelblue")
+        .style("fill", function (d) {
+            return colorRange(d.mag);
+        })
+        .attr("stroke", function (d) {
+            return colorRange(d.mag);
+        })
         .attr("stroke-width", 3)
         .attr("fill-opacity", 0.4)
         .style("pointer-events","visible")
