@@ -7,7 +7,6 @@ import time
 
 def getYear(data):
     dates = data["Date"]
-    # dates = [Date(date) for date in dates]
     return [date.split("/")[-1] for date in dates] 
 
 def toFloat(data):
