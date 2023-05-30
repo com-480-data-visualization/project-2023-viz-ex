@@ -33,7 +33,6 @@ whenDocumentLoaded(() => {
       globe.width([newSize]);
       globe.height([newSize]);
     });
-
     window.isScriptLoaded = true;
   }
 });
