@@ -33,14 +33,12 @@ const getSize = (marginRatio) => {
 const { width, height } = getSize(marginRatio);
 
 export const initDensity = ()=> {
+    initSlider(10);
     d3.json("./data/earthquake_magnitudes.json").then(function(_data) {
         // Get the different categories and count them
         const data = _data;
         
         const yearSlider = document.querySelector("input");
-        const year = document.getElementById("year")
-        year.innerText = yearSlider.value
-
         const countriesToDisplay = new Set(getCountriesToDisplay(data))
         let yearData = data[yearSlider.value];
 
@@ -57,12 +55,24 @@ export const initDensity = ()=> {
         initDensityPlot(filteredYearData, svg);
 
         yearSlider.oninput = () => {
-                year.innerText = yearSlider.value
                 let yearData = data[yearSlider.value];
                 let filteredYearData = filterData(yearData, countriesToDisplay)
                 updateDensityPlot(filteredYearData, svg);
             }
     });
+}
+
+const initSlider = (nTicks) => {
+    const minYear = 1965;
+    const maxYear = 2016;
+    const interval = Math.floor((maxYear - minYear)/nTicks)
+    const datalist = document.getElementById("years");
+    for (let tick = minYear; tick <= maxYear; tick += interval) {
+        const option = document.createElement('option');
+        option.label = tick;
+        option.value = tick;
+        datalist.append(option);
+    }
 }
 
 const getCountriesToDisplay = (data) => {

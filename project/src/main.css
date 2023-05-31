@@ -4,9 +4,25 @@
     border-radius: 10px;
 }
 
+#myRange {
+    width: 60vw;
+}
+
 #slider-container {
     height: 10%;
     width: 80%;
+}
+
+datalist {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    writing-mode: vertical-lr;
+    width: 59vw;
+}
+
+option {
+    padding: 0;
 }
 
 #big-earthquake-container {
