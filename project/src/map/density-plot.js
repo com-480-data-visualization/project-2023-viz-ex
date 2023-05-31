@@ -1,6 +1,6 @@
 import * as d3 from "d3";
 
-const marginRatio = {top: 0.1, right: 0.1, bottom: 0.1, left: 0.2};
+const marginRatio = {top: 0.1, right: 0.1, bottom: 0.1, left: 0.1};
 
 const getMargin = (marginRatio) => {
     const margin = {}
@@ -31,10 +31,6 @@ const getSize = (marginRatio) => {
 }
 
 const { width, height } = getSize(marginRatio);
- // set the dimensions and margins of the graph
-
-// width = 560 - margin.left - margin.right,
-// height = 500 - margin.top - margin.bottom;
 
 export const initDensity = ()=> {
     d3.json("./data/earthquake_magnitudes.json").then(function(_data) {
