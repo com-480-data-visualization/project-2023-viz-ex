@@ -1,4 +1,4 @@
-import { scaleLinear } from "d3";
+import { randomBates, scaleLinear } from "d3";
 import { initMap } from "./map";
 import { select } from "d3-selection";
 import DataDrivenRangeSlider from "data-driven-range-slider";
@@ -16,10 +16,12 @@ export const initTimeEarthQuakeMap = (mapId) => {
 
 export const addDataToTimeMap = (map, data) => {
     var svg = select(map.getPanes().markerPane).select("svg");
-    initSlider(data, (data) => {
+    const slider = initSlider(data, (data) => {
         // svg.selectAll("circle").remove()
         displayData(map, svg, data)
+        // updateYearsElement(data);
     });
+    
 }
 
 const initSlider = (data, onSliderChange) => {
@@ -182,3 +184,27 @@ const getPopupContent = (country, magnitude, date) => {
       </div>
   `
 }
+
+const getSliderValues = (data)=>{
+    function onlyUnique(value, index, array) {
+        return array.indexOf(value) === index;
+    }
+    var date = Array.from(data).map((d) => new Date(d.Date).getFullYear())
+        .filter(onlyUnique);
+    console.log("DATE",date)
+    if(date.length === 0) return ["", ""]
+    if(date.length === 1) return [date, date]
+    var max = Math.max(...date)
+    var min = Math.min(...date)
+    return [min, max]
+}
+
+const updateYearsElement = (data)=>{
+    var minMax = getSliderValues(data)
+    console.log("minMax",minMax)
+    var min = document.querySelector("#time-map-year-min")
+    min.innerHTML = minMax[0]
+    var max = document.querySelector("#time-map-year-max")
+    max.innerHTML = minMax[1]
+}
+
