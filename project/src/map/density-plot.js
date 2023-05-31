@@ -36,19 +36,15 @@ export const initDensity = ()=> {
     d3.json("./data/earthquake_magnitudes.json").then(function(_data) {
         // Get the different categories and count them
         const data = _data;
-
+        
         const yearSlider = document.querySelector("input");
         const year = document.getElementById("year")
         year.innerText = yearSlider.value
 
+        const countriesToDisplay = new Set(getCountriesToDisplay(data))
         let yearData = data[yearSlider.value];
-        let countries = new Set(Object.keys(yearData).slice(0, 50));
-        let filteredYearData = {}
-        for (const country of countries) {
-            if (countries.has(country)) {
-                filteredYearData[country] = yearData[country]
-            }
-        }
+
+        let filteredYearData = filterData(yearData, countriesToDisplay)
 
         let svg = d3.select("#density-plot")
             .append("svg")
@@ -63,16 +59,36 @@ export const initDensity = ()=> {
         yearSlider.oninput = () => {
                 year.innerText = yearSlider.value
                 let yearData = data[yearSlider.value];
-                let filteredYearData = {}
-                for (const country of countries) {
-                    if (countries.has(country)) {
-                        filteredYearData[country] = yearData[country]
-                    }
-                }
-
+                let filteredYearData = filterData(yearData, countriesToDisplay)
                 updateDensityPlot(filteredYearData, svg);
             }
-    });        
+    });
+}
+
+const getCountriesToDisplay = (data) => {
+    const earthquakeCount = new Map();
+    for (const year of Object.keys(data)) {
+        const earthquakeCountries = data[year];
+        for (const country of Object.keys(earthquakeCountries)) {
+            const count = earthquakeCount.get(country) ?? 0;
+            const newCount = count + earthquakeCountries[country].length
+            earthquakeCount.set(country, newCount)
+        }
+    }
+    const sortedCountries = [...earthquakeCount.entries()].sort((a, b) => b[1] - a[1]);
+    return sortedCountries
+        .slice(0, 40)
+        .map(([country, count]) => country);
+}
+
+const filterData = (yearData, countries) => {
+    let filteredYearData = {};
+    for (const country of countries) {
+        if (countries.has(country)) {
+            filteredYearData[country] = yearData[country];
+        }
+    }
+    return filteredYearData;
 }
 
 const initDensityPlot = (data, svg) => {
