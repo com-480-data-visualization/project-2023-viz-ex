@@ -8,6 +8,11 @@
 
 [Milestone 1](https://github.com/com-480-data-visualization/project-2023-viz-ex/tree/master/ms1) • [Milestone 2](#milestone-2) • [Milestone 3](#milestone-3)
 
+## Set up and Usage
+- To view the project directly, access our [website](https://com-480-data-visualization.github.io/project-2023-viz-ex/).
+- If you wish to run the project locally, open terminal, navigate to the project root folder and complete the following steps:
+
+
 ## Project Delivarables
 - [Website](https://com-480-data-visualization.github.io/project-2023-viz-ex/)
 - [Screencast](https://drive.google.com/file/d/1iUBLydUu2eR-k3wHTvNJh2Zt70JyUjC9/view?usp=sharing)
