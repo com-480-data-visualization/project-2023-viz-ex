@@ -8,18 +8,8 @@
 
 [Milestone 1](https://github.com/com-480-data-visualization/project-2023-viz-ex/tree/master/ms1) • [Milestone 2](#milestone-2) • [Milestone 3](#milestone-3)
 
-## How to start the Project
-
-### 1. Install node.js (https://nodejs.org/en/download)
-### 2. Download projects dependencies
-```
-cd project
-npm ci
-```
-### 3. Start the http server
-```
-npm start
-```
+## Link to access the project
+https://com-480-data-visualization.github.io/project-2023-viz-ex/
 
 ## Milestone 1 (23rd April, 5pm)
 
