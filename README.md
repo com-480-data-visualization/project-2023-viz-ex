@@ -11,7 +11,7 @@
 ## Project Delivarables
 - [Website](https://com-480-data-visualization.github.io/project-2023-viz-ex/)
 - [Screencast](https://drive.google.com/file/d/1iUBLydUu2eR-k3wHTvNJh2Zt70JyUjC9/view?usp=sharing)
-- [Process Book]()
+- [Process Book](https://github.com/com-480-data-visualization/project-2023-viz-ex/blob/master/Viz-ex-Process-book.pdf)
 ## Milestone 1 (23rd April, 5pm)
 
 **10% of the final grade**
