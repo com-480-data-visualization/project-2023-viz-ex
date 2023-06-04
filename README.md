@@ -8,9 +8,10 @@
 
 [Milestone 1](https://github.com/com-480-data-visualization/project-2023-viz-ex/tree/master/ms1) • [Milestone 2](#milestone-2) • [Milestone 3](#milestone-3)
 
-## Link to access the project
-https://com-480-data-visualization.github.io/project-2023-viz-ex/
-
+## Project Delivarables
+- [Website](https://com-480-data-visualization.github.io/project-2023-viz-ex/)
+- [Screencast](https://drive.google.com/file/d/1iUBLydUu2eR-k3wHTvNJh2Zt70JyUjC9/view?usp=sharing)
+- [Process Book]()
 ## Milestone 1 (23rd April, 5pm)
 
 **10% of the final grade**
