@@ -16,14 +16,14 @@
 - To view the project directly, access our [website](https://com-480-data-visualization.github.io/project-2023-viz-ex/).
 - If you wish to run the project locally, open terminal, navigate to the project root folder and complete the following steps:
 
-### 1. Install node.js (https://nodejs.org/en/download)
-### 2. Download http server and projects dependencies
+#### 1. Install node.js (https://nodejs.org/en/download)
+#### 2. Download http server and projects dependencies
 ```
 cd project
 npm install http-server
 npm ci
 ```
-### 3. Start the http server
+#### 3. Start the http server
 ```
 npm start
 ```
