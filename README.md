@@ -13,7 +13,7 @@
 - [Screencast](https://drive.google.com/file/d/1iUBLydUu2eR-k3wHTvNJh2Zt70JyUjC9/view?usp=sharing)
 - [Process Book](https://github.com/com-480-data-visualization/project-2023-viz-ex/blob/master/Viz-ex-Process-book.pdf)
 ## Set up and Usage
-- To view the project directly, access our [website](https://com-480-data-visualization.github.io/project-2023-viz-ex/).
+- To view the project directly, watch the [screencast](https://drive.google.com/file/d/1iUBLydUu2eR-k3wHTvNJh2Zt70JyUjC9/view?usp=sharing) to learn how to use the project, and access our [website](https://com-480-data-visualization.github.io/project-2023-viz-ex/).
 - If you wish to run the project locally, open terminal, navigate to the project root folder and complete the following steps:
 
 #### 1. Install node.js (https://nodejs.org/en/download)
